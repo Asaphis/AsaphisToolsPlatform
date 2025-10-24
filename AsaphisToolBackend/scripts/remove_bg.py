@@ -306,19 +306,25 @@ def normalize(d):
 
 def refine_mask_edges(mask, kernel_size=5, iterations=2):
     """Refine mask edges using morphological operations"""
-    mask_np = np.array(mask)
-    
-    # Apply morphological opening to remove noise
-    kernel = np.ones((kernel_size, kernel_size), np.uint8)
-    import cv2
-    
-    # Morphological closing to fill small holes
-    mask_np = cv2.morphologyEx(mask_np, cv2.MORPH_CLOSE, kernel, iterations=iterations)
-    
-    # Apply Gaussian blur for smooth edges
-    mask_np = cv2.GaussianBlur(mask_np, (5, 5), 0)
-    
-    return Image.fromarray(mask_np)
+    try:
+        import cv2
+        mask_np = np.array(mask)
+        
+        # Apply morphological opening to remove noise
+        kernel = np.ones((kernel_size, kernel_size), np.uint8)
+        
+        # Morphological closing to fill small holes
+        mask_np = cv2.morphologyEx(mask_np, cv2.MORPH_CLOSE, kernel, iterations=iterations)
+        
+        # Apply Gaussian blur for smooth edges
+        mask_np = cv2.GaussianBlur(mask_np, (5, 5), 0)
+        
+        return Image.fromarray(mask_np)
+    except ImportError:
+        # Fallback: use PIL filters
+        from PIL import ImageFilter
+        mask = mask.filter(ImageFilter.GaussianBlur(radius=2))
+        return mask
 
 def apply_trimap(mask, threshold_low=0.2, threshold_high=0.8):
     """Generate trimap for better foreground/background separation"""
@@ -383,11 +389,15 @@ def remove_background(image_path, output_path=None):
     image_np = np.array(image)
     
     # Smooth alpha channel for better edges
-    import scipy.ndimage
     try:
+        import scipy.ndimage
         mask_np = scipy.ndimage.gaussian_filter(mask_np, sigma=0.5)
-    except:
-        pass
+    except ImportError:
+        # Fallback: use simple averaging
+        from PIL import ImageFilter
+        mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
+        mask_pil = mask_pil.filter(ImageFilter.SMOOTH)
+        mask_np = np.array(mask_pil).astype(np.float32) / 255.0
     
     # Apply alpha channel
     image_np[:, :, 3] = (mask_np * 255).astype(np.uint8)

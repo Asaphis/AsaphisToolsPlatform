@@ -51,8 +51,16 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
 
     inputPath = req.file.path;
 
-    // Call Python script for background removal
-    const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'remove_bg.py');
+    // Try professional script first, fallback to basic
+    const scriptPaths = [
+      path.join(__dirname, '..', '..', 'scripts', 'remove_bg_pro.py'),
+      path.join(__dirname, '..', '..', 'scripts', 'remove_bg.py')
+    ];
+    
+    let scriptPath = scriptPaths[0];
+    if (!fs.existsSync(scriptPath)) {
+      scriptPath = scriptPaths[1];
+    }
     
     // Check if Python is available
     const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
@@ -63,6 +71,12 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
       let stdout = '';
       let stderr = '';
       
+      // Set timeout of 60 seconds
+      const timeout = setTimeout(() => {
+        pythonProcess.kill();
+        reject(new Error('Background removal timed out after 60 seconds'));
+      }, 60000);
+      
       pythonProcess.stdout.on('data', (data) => {
         stdout += data.toString();
       });
@@ -72,16 +86,25 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
       });
       
       pythonProcess.on('close', (code) => {
+        clearTimeout(timeout);
         if (code !== 0) {
           console.error('Python script error:', stderr);
-          reject(new Error(`Background removal failed: ${stderr || 'Unknown error'}`));
+          // Provide helpful error message
+          if (stderr.includes('ModuleNotFoundError')) {
+            reject(new Error('Python dependencies not installed. Run: python setup_background_removal.py'));
+          } else if (stderr.includes('Model file not found')) {
+            reject(new Error('AI model not found. Run: python setup_background_removal.py'));
+          } else {
+            reject(new Error(`Background removal failed: ${stderr || 'Unknown error'}`));
+          }
         } else {
           resolve(stdout);
         }
       });
       
       pythonProcess.on('error', (error) => {
-        reject(new Error(`Failed to start Python process: ${error.message}`));
+        clearTimeout(timeout);
+        reject(new Error(`Failed to start Python process: ${error.message}. Is Python installed?`));
       });
     });
 
