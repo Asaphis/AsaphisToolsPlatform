@@ -326,16 +326,14 @@ def refine_mask_edges(mask, kernel_size=5, iterations=2):
         mask = mask.filter(ImageFilter.GaussianBlur(radius=2))
         return mask
 
-def apply_trimap(mask, threshold_low=0.2, threshold_high=0.8):
-    """Generate trimap for better foreground/background separation"""
+def apply_threshold(mask, threshold=0.5):
+    """Apply threshold to mask - keep only confident foreground"""
     mask_np = np.array(mask).astype(np.float32) / 255.0
     
-    # Create trimap: 0 = background, 0.5 = uncertain, 1 = foreground
-    trimap = np.zeros_like(mask_np)
-    trimap[mask_np > threshold_high] = 1.0  # Definite foreground
-    trimap[(mask_np > threshold_low) & (mask_np <= threshold_high)] = 0.5  # Uncertain region
+    # Simple binary threshold - above threshold = foreground
+    binary_mask = (mask_np > threshold).astype(np.float32)
     
-    return (trimap * 255).astype(np.uint8)
+    return (binary_mask * 255).astype(np.uint8)
 
 def remove_background(image_path, output_path=None):
     # Load model
@@ -369,19 +367,16 @@ def remove_background(image_path, output_path=None):
     # Resize to original size with high-quality interpolation
     mask = Image.fromarray((pred * 255).astype(np.uint8)).resize(orig_size, Image.LANCZOS)
     
-    # Only apply advanced processing if cv2 is available
-    try:
-        import cv2
-        # Apply trimap for better separation
-        trimap = apply_trimap(mask, threshold_low=0.15, threshold_high=0.85)
-        mask = Image.fromarray(trimap)
-        
-        # Refine edges for professional quality
-        mask = refine_mask_edges(mask, kernel_size=3, iterations=1)
-    except ImportError:
-        # Fallback: just use basic mask with slight blur
-        from PIL import ImageFilter
-        mask = mask.filter(ImageFilter.GaussianBlur(radius=1))
+    # Apply simple threshold to get clean binary mask
+    # Lower threshold to keep more of the subject
+    mask_np = np.array(mask).astype(np.float32) / 255.0
+    # Use 0.3 threshold - anything above 30% confidence is kept
+    binary_mask = (mask_np > 0.3).astype(np.float32)
+    mask = Image.fromarray((binary_mask * 255).astype(np.uint8))
+    
+    # Light smoothing only
+    from PIL import ImageFilter
+    mask = mask.filter(ImageFilter.GaussianBlur(radius=0.5))
     
     # Apply mask to original image
     image = image.convert('RGBA')

@@ -51,8 +51,8 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
 
     inputPath = req.file.path;
 
-    // Use professional rembg script for best quality
-    const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'remove_bg_pro.py');
+    // Use custom U2-Net script with fixed thresholds
+    const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'remove_bg.py');
     
     if (!fs.existsSync(scriptPath)) {
       return res.status(500).json({ 
