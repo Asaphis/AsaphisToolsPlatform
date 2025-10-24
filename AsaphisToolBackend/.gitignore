@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+
+# Model files (large binary files)
+models/*.pth
+models/*.pt
+models/*.onnx
+
+# Temporary upload directory
+uploads/

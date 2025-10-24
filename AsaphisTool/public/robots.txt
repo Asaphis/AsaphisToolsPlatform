@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://asaphistool.com/sitemap.xml
+
+# Allow crawling of all content
+Allow: /tools/
+Allow: /category/
+Allow: /blog/
+Allow: /search
+
+# Disallow admin or API routes if any
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Crawl-delay for better performance
+Crawl-delay: 1

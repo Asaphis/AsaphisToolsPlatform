@@ -1,0 +1,4 @@
+# Authorized sellers of inventory for asaphistool.com
+# Replace {{ADSENSE_PUBLISHER_ID}} with your real AdSense publisher ID (format: pub-XXXXXXXXXXXXXXXX)
+# Google AdSense
+google.com, {{ADSENSE_PUBLISHER_ID}}, DIRECT, f08c47fec0942fa0
