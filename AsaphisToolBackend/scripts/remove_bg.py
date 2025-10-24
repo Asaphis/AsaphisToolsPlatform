@@ -304,6 +304,33 @@ def normalize(d):
     dn = (d - mi) / (ma - mi)
     return dn
 
+def refine_mask_edges(mask, kernel_size=5, iterations=2):
+    """Refine mask edges using morphological operations"""
+    mask_np = np.array(mask)
+    
+    # Apply morphological opening to remove noise
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    import cv2
+    
+    # Morphological closing to fill small holes
+    mask_np = cv2.morphologyEx(mask_np, cv2.MORPH_CLOSE, kernel, iterations=iterations)
+    
+    # Apply Gaussian blur for smooth edges
+    mask_np = cv2.GaussianBlur(mask_np, (5, 5), 0)
+    
+    return Image.fromarray(mask_np)
+
+def apply_trimap(mask, threshold_low=0.2, threshold_high=0.8):
+    """Generate trimap for better foreground/background separation"""
+    mask_np = np.array(mask).astype(np.float32) / 255.0
+    
+    # Create trimap: 0 = background, 0.5 = uncertain, 1 = foreground
+    trimap = np.zeros_like(mask_np)
+    trimap[mask_np > threshold_high] = 1.0  # Definite foreground
+    trimap[(mask_np > threshold_low) & (mask_np <= threshold_high)] = 0.5  # Uncertain region
+    
+    return (trimap * 255).astype(np.uint8)
+
 def remove_background(image_path, output_path=None):
     # Load model
     net = load_model()
@@ -312,9 +339,12 @@ def remove_background(image_path, output_path=None):
     image = Image.open(image_path).convert('RGB')
     orig_size = image.size
     
+    # Use higher resolution for better accuracy (640x640 instead of 320x320)
+    target_size = 640
+    
     # Preprocess
     transform = transforms.Compose([
-        transforms.Resize((320, 320)),
+        transforms.Resize((target_size, target_size)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
@@ -330,15 +360,39 @@ def remove_background(image_path, output_path=None):
     pred = normalize(pred)
     pred = pred.squeeze().cpu().numpy()
     
-    mask = Image.fromarray((pred * 255).astype(np.uint8)).resize(orig_size, Image.BILINEAR)
+    # Resize to original size with high-quality interpolation
+    mask = Image.fromarray((pred * 255).astype(np.uint8)).resize(orig_size, Image.LANCZOS)
     
-    # Apply mask to original image
+    # Apply trimap for better separation
+    trimap = apply_trimap(mask, threshold_low=0.15, threshold_high=0.85)
+    mask = Image.fromarray(trimap)
+    
+    # Refine edges for professional quality
+    try:
+        mask = refine_mask_edges(mask, kernel_size=3, iterations=1)
+    except ImportError:
+        # If cv2 not available, use PIL-only approach
+        pass
+    
+    # Apply mask to original image with alpha blending
     image = image.convert('RGBA')
     mask = mask.convert('L')
     
-    # Create transparent background
-    output_image = Image.new('RGBA', orig_size, (0, 0, 0, 0))
-    output_image.paste(image, mask=mask)
+    # Apply mask as alpha channel
+    mask_np = np.array(mask).astype(np.float32) / 255.0
+    image_np = np.array(image)
+    
+    # Smooth alpha channel for better edges
+    import scipy.ndimage
+    try:
+        mask_np = scipy.ndimage.gaussian_filter(mask_np, sigma=0.5)
+    except:
+        pass
+    
+    # Apply alpha channel
+    image_np[:, :, 3] = (mask_np * 255).astype(np.uint8)
+    
+    output_image = Image.fromarray(image_np, 'RGBA')
     
     # Save or return base64
     if output_path:
