@@ -369,40 +369,27 @@ def remove_background(image_path, output_path=None):
     # Resize to original size with high-quality interpolation
     mask = Image.fromarray((pred * 255).astype(np.uint8)).resize(orig_size, Image.LANCZOS)
     
-    # Apply trimap for better separation
-    trimap = apply_trimap(mask, threshold_low=0.15, threshold_high=0.85)
-    mask = Image.fromarray(trimap)
-    
-    # Refine edges for professional quality
+    # Only apply advanced processing if cv2 is available
     try:
+        import cv2
+        # Apply trimap for better separation
+        trimap = apply_trimap(mask, threshold_low=0.15, threshold_high=0.85)
+        mask = Image.fromarray(trimap)
+        
+        # Refine edges for professional quality
         mask = refine_mask_edges(mask, kernel_size=3, iterations=1)
     except ImportError:
-        # If cv2 not available, use PIL-only approach
-        pass
+        # Fallback: just use basic mask with slight blur
+        from PIL import ImageFilter
+        mask = mask.filter(ImageFilter.GaussianBlur(radius=1))
     
-    # Apply mask to original image with alpha blending
+    # Apply mask to original image
     image = image.convert('RGBA')
     mask = mask.convert('L')
     
-    # Apply mask as alpha channel
-    mask_np = np.array(mask).astype(np.float32) / 255.0
-    image_np = np.array(image)
-    
-    # Smooth alpha channel for better edges
-    try:
-        import scipy.ndimage
-        mask_np = scipy.ndimage.gaussian_filter(mask_np, sigma=0.5)
-    except ImportError:
-        # Fallback: use simple averaging
-        from PIL import ImageFilter
-        mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
-        mask_pil = mask_pil.filter(ImageFilter.SMOOTH)
-        mask_np = np.array(mask_pil).astype(np.float32) / 255.0
-    
-    # Apply alpha channel
-    image_np[:, :, 3] = (mask_np * 255).astype(np.uint8)
-    
-    output_image = Image.fromarray(image_np, 'RGBA')
+    # Create output with transparent background
+    output_image = Image.new('RGBA', orig_size, (0, 0, 0, 0))
+    output_image.paste(image, mask=mask)
     
     # Save or return base64
     if output_path:
