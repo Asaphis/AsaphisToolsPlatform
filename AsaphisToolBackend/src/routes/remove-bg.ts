@@ -51,15 +51,14 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
 
     inputPath = req.file.path;
 
-    // Try professional script first, fallback to basic
-    const scriptPaths = [
-      path.join(__dirname, '..', '..', 'scripts', 'remove_bg_pro.py'),
-      path.join(__dirname, '..', '..', 'scripts', 'remove_bg.py')
-    ];
+    // Use professional rembg script for best quality
+    const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'remove_bg_pro.py');
     
-    let scriptPath = scriptPaths[0];
     if (!fs.existsSync(scriptPath)) {
-      scriptPath = scriptPaths[1];
+      return res.status(500).json({ 
+        status: 'error', 
+        error: 'Background removal script not found.' 
+      });
     }
     
     // Check if Python is available
