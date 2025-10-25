@@ -20,19 +20,23 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16 sm:py-24">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <section className="relative bg-white/95 dark:bg-gray-900 py-16 sm:py-24 border-b border-gray-100 dark:border-gray-800">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 text-white flex items-center justify-center text-3xl shadow-lg">
+                🛠️
+              </div>
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
               Free Online Tools for
-              <span className="block text-primary-600 dark:text-primary-400">
+              <span className="block bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">
                 Everything You Need
               </span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
               Boost your productivity with our collection of free, fast, and secure online tools. 
-              Compress images, edit PDFs, generate QR codes, and much more - all in your browser, 
+              Compress images, edit PDFs, generate QR codes, and much more — all in your browser, 
               no downloads required.
             </p>
             
@@ -131,7 +135,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/tools"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+              className="btn-primary"
             >
               View All Tools
               <svg

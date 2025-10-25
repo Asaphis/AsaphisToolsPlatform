@@ -18,6 +18,8 @@
  * - icon-apple-180.png (Apple touch icon)
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-env node */
 const fs = require('fs');
 const path = require('path');
 

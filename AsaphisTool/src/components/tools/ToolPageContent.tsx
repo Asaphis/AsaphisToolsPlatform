@@ -1,24 +1,9 @@
 'use client';
 
 import { Tool } from '@/types';
-import { WordCounter } from './WordCounter';
-import { PasswordGenerator } from './PasswordGenerator';
 import {
-  ImageCompressor,
-  PDFMerger,
-  PDFSplitter,
-  ImageFormatConverter,
-  CSVToJSONConverter,
-  BackgroundRemover,
-  QRCodeGenerator,
-  JSONFormatter,
-  URLEncoderDecoder,
-  Base64EncoderDecoder,
-  TextCaseConverter,
-  ImageResizer,
-  UUIDGenerator,
+  RemoteToolRunner,
   HashGenerator,
-  PasswordStrengthChecker,
 } from './index';
 
 interface ToolPageContentProps {
@@ -28,19 +13,19 @@ interface ToolPageContentProps {
 // Default tool interface for tools that don't have specific implementations yet
 function DefaultToolInterface({ tool }: { tool: Tool }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800 p-8 shadow-sm">
       <div className="text-center">
-        <div className="w-24 h-24 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-full flex items-center justify-center text-6xl mx-auto mb-6">
+        <div className="w-24 h-24 bg-gradient-to-br from-sky-500 to-violet-500 rounded-2xl flex items-center justify-center text-5xl text-white mx-auto mb-6 shadow-lg">
           {tool.icon}
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3">
           {tool.name}
         </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
           {tool.description}
         </p>
         
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-8">
+        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-yellow-900/20 dark:to-amber-900/10 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-8">
           <div className="flex items-center justify-center mb-4">
             <svg className="w-12 h-12 text-yellow-500" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
@@ -50,16 +35,16 @@ function DefaultToolInterface({ tool }: { tool: Tool }) {
             Coming Soon!
           </h3>
           <p className="text-yellow-700 dark:text-yellow-300">
-            This tool is currently under development. We're working hard to bring you the best {tool.name.toLowerCase()} experience. 
+            This tool is currently under development. We&apos;re working hard to bring you the best {tool.name.toLowerCase()} experience. 
             Check back soon or subscribe to our newsletter for updates!
           </p>
         </div>
 
-        <div className="flex items-center justify-center space-x-4">
-          <button className="inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div className="flex items-center justify-center gap-3">
+          <button className="inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-100">
             Request Early Access
           </button>
-          <button className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+          <button className="inline-flex items-center px-6 py-3 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-sky-500 to-violet-500 hover:from-sky-600 hover:to-violet-600 focus:outline-none focus:ring-2 focus:ring-sky-100">
             Get Notified
           </button>
         </div>
@@ -73,41 +58,73 @@ export function ToolPageContent({ tool }: ToolPageContentProps) {
   const renderTool = () => {
     switch (tool.id) {
       case 'image-compressor':
-        return <ImageCompressor />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'image-resizer':
-        return <ImageResizer />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'pdf-merger':
-        return <PDFMerger />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'pdf-splitter':
-        return <PDFSplitter />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'image-format-converter':
-        return <ImageFormatConverter />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'csv-to-json-converter':
-        return <CSVToJSONConverter />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'background-remover':
-        return <BackgroundRemover />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'word-counter':
-        return <WordCounter />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'text-case-converter':
-        return <TextCaseConverter />;
+        return <DefaultToolInterface tool={tool} />;
       case 'json-formatter':
-        return <JSONFormatter />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'url-encoder-decoder':
-        return <URLEncoderDecoder />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'base64-encoder-decoder':
-        return <Base64EncoderDecoder />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'qr-code-generator':
-        return <QRCodeGenerator />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'password-generator':
-        return <PasswordGenerator />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'uuid-generator':
-        return <UUIDGenerator />;
+        return <RemoteToolRunner toolId={tool.id} />;
       case 'hash-generator':
         return <HashGenerator />;
       case 'password-strength-checker':
-        return <PasswordStrengthChecker />;
+        return <RemoteToolRunner toolId={tool.id} />;
+      case 'lorem-ipsum-generator':
+        return <DefaultToolInterface tool={tool} />;
+      case 'youtube-thumbnail-downloader':
+        return <RemoteToolRunner toolId={tool.id} />;
+      // Video & Audio converters/encoders
+      case 'video-to-mp3':
+      case 'mp4-to-mp3':
+      case 'mp3-to-ogg':
+      case 'mp4-converter':
+      case 'mov-to-mp4':
+      case 'video-converter':
+        return <RemoteToolRunner toolId={tool.id} />;
+      // GIF & Video tools (backend)
+      case 'video-to-gif':
+      case 'mp4-to-gif':
+      case 'webm-to-gif':
+      case 'gif-to-mp4':
+      case 'video-compressor':
+      case 'mp3-compressor':
+      case 'wav-compressor':
+      case 'gif-compressor':
+      case 'video-converter':
+      case 'mp4-converter':
+      case 'mov-to-mp4':
+      case 'video-to-mp3':
+      case 'mp4-to-mp3':
+      case 'mp3-to-ogg':
+        return <RemoteToolRunner toolId={tool.id} />;
+      // PDF tools
+      case 'pdf-to-jpg':
+        return <RemoteToolRunner toolId={tool.id} />;
       default:
-        return null;
+        // For tools without specific UI, use backend-connected runner if available
+        return <RemoteToolRunner toolId={tool.id} />;
     }
   };
 

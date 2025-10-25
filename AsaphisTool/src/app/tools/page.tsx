@@ -37,13 +37,18 @@ export default async function ToolsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white/95 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-violet-500 text-white flex items-center justify-center text-3xl shadow-lg">
+                🧰
+              </div>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               All Tools
             </h1>
-            <p className="mt-4 text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Browse our complete collection of free online tools. From image compression to PDF editing,
               find the perfect tool for your needs.
             </p>
@@ -56,7 +61,7 @@ export default async function ToolsPage() {
             {/* Stats */}
             <div className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
                   {tools.length}+
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -64,7 +69,7 @@ export default async function ToolsPage() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
                   {categories.length}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -72,7 +77,7 @@ export default async function ToolsPage() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
                   100%
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">

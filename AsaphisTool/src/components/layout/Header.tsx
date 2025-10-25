@@ -33,22 +33,25 @@ export function Header() {
 
   const navigation = [
     { name: 'Home', href: '/', current: pathname === '/' },
-    { name: 'All Tools', href: '/tools', current: pathname === '/tools' },
+    { name: 'All Tools', href: '/', current: pathname === '/' },
+    { name: 'About', href: '/about', current: pathname === '/about' },
+    { name: 'Help', href: '/help', current: pathname === '/help' },
+    { name: 'Contact', href: '/contact', current: pathname === '/contact' },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image 
-                src="/logo.png" 
+                src="/AsaphistoolLogo.png" 
                 alt="AsaPhisTool Logo" 
                 width={40} 
                 height={40}
-                className="h-10 w-auto"
+                className="h-10 w-10 object-contain"
                 priority
               />
               <span className="hidden sm:block font-bold text-xl text-gray-900 dark:text-white">
@@ -136,19 +139,19 @@ export function Header() {
               </Link>
             ))}
 
-            {/* Mobile Categories */}
+            {/* Mobile Quick Links */}
             <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
               <div className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Categories
+                Quick Links
               </div>
-              {categories.map((category) => (
+              {categories.slice(0, 5).map((category) => (
                 <Link
                   key={category.id}
                   href={`/category/${category.id}`}
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {category.name}
+                  {category.name} Tools
                 </Link>
               ))}
             </div>

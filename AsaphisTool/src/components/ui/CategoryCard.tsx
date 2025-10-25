@@ -37,35 +37,14 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <Link
       href={`/category/${category.id}`}
-      className="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
+      className="group block card p-6 hover:border-sky-300 dark:hover:border-sky-600 text-center"
     >
-      <div className="text-center">
-        <div className={`mx-auto w-16 h-16 bg-gradient-to-r ${gradientColor} rounded-full flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300`}>
-          {icon}
-        </div>
-        
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          {category.name}
-        </h3>
-        
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {category.count} {category.count === 1 ? 'tool' : 'tools'}
-        </p>
-        
-        <div className="mt-3 inline-flex items-center text-primary-600 dark:text-primary-400 text-sm font-medium group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-          Explore tools
-          <svg
-            className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
+      <div className={`mx-auto w-14 h-14 bg-gradient-to-r ${gradientColor} rounded-xl flex items-center justify-center text-2xl mb-3`}>{icon}</div>
+      <h3 className="text-base font-semibold text-gray-900 dark:text-white">{category.name}</h3>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{category.count} {category.count === 1 ? 'tool' : 'tools'}</p>
+      <div className="mt-3 inline-flex items-center text-sky-600 dark:text-sky-400 text-sm font-medium">
+        Explore tools
+        <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
       </div>
     </Link>
   );

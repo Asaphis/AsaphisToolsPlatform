@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     'qr code generator',
     'password generator'
   ],
-  authors: [{ name: 'AsaPhisTool' }],
-  creator: 'AsaPhisTool',
-  publisher: 'AsaPhisTool',
+  authors: [{ name: 'AsaPhis' }],
+  creator: 'AsaPhis',
+  publisher: 'AsaPhis',
   formatDetection: {
     email: false,
     address: false,

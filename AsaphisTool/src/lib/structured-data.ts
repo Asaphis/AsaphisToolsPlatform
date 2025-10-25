@@ -27,14 +27,14 @@ export const generateOrganizationStructuredData = () => {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'AsaPhisTool',
-    description: 'Free online tools and utilities platform',
+    name: 'AsaPhis',
+    description: 'Technology company providing free online tools and utilities',
     url: 'https://asaphistool.com',
     logo: 'https://asaphistool.com/logo.png',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
-      email: 'support@asaphistool.com'
+      email: 'support@asaphis.com'
     },
     sameAs: [
       'https://twitter.com/asaphistool',
@@ -62,7 +62,7 @@ export const generateToolStructuredData = (tool: Tool) => {
     screenshot: `https://asaphistool.com/screenshots/${tool.slug}.png`,
     author: {
       '@type': 'Organization',
-      name: 'AsaPhisTool'
+      name: 'AsaPhis'
     },
     datePublished: '2024-01-01',
     inLanguage: 'en'

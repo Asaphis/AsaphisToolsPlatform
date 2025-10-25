@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 
 type Category = { id: string; name: string };
 
@@ -26,88 +28,165 @@ export function Footer() {
     return () => { cancelled = true; };
   }, []);
 
+  const popularTools = [
+    { name: 'Image Compressor', href: '/tools/image-compressor' },
+    { name: 'PDF Merger', href: '/tools/pdf-merger' },
+    { name: 'QR Code Generator', href: '/tools/qr-code-generator' },
+    { name: 'Password Generator', href: '/tools/password-generator' },
+    { name: 'JSON Formatter', href: '/tools/json-formatter' },
+  ];
+
   const footerLinks = {
-    Tools: categories.slice(0, 4).map(cat => ({
-      name: `${cat.name} Tools`,
-      href: `/category/${cat.id}`
-    })),
     Company: [
       { name: 'About Us', href: '/about' },
       { name: 'Contact', href: '/contact' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Careers', href: '/careers' }
-    ],
-    Resources: [
       { name: 'Help Center', href: '/help' },
-      { name: 'API Documentation', href: '/api-docs' },
-      { name: 'Status', href: '/status' },
-      { name: 'Changelog', href: '/changelog' }
     ],
     Legal: [
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'DMCA', href: '/dmca' }
-    ]
+    ],
+    Categories: categories.slice(0, 6).map(cat => ({
+      name: cat.name,
+      href: `/category/${cat.id}`
+    })),
   };
 
-  const socialLinks: any[] = [];
+  const socialLinks = [
+    { name: 'Twitter', href: '#', icon: Twitter },
+    { name: 'GitHub', href: '#', icon: Github },
+    { name: 'LinkedIn', href: '#', icon: Linkedin },
+    { name: 'Email', href: '/contact', icon: Mail },
+  ];
 
   return (
-    <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main footer content */}
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
           {/* Brand section */}
-          <div className="space-y-8 xl:col-span-1">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white font-bold text-lg">
-                A
-              </div>
+          <div className="col-span-2 md:col-span-4 lg:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <Image 
+                src="/AsaphistoolLogo.png" 
+                alt="AsaPhisTool Logo" 
+                width={32} 
+                height={32}
+                className="h-8 w-8 object-contain"
+              />
               <span className="font-bold text-xl text-gray-900 dark:text-white">
                 AsaPhisTool
               </span>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 text-base max-w-md">
-              Free online tools and utilities for productivity and creativity. 
-              Compress images, edit PDFs, generate QR codes, and much more - 
-              all for free, fast, and secure.
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
+              Free online tools for everyone. Compress images, merge PDFs, generate QR codes, and more - all in your browser.
             </p>
-            <div className="flex space-x-6" />
+            
+            {/* Social Links */}
+            <div className="flex space-x-4">
+              {socialLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    aria-label={item.name}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Links */}
-          <div className="mt-12 grid grid-cols-1 gap-8 xl:mt-0 xl:col-span-2">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase">
-                Tools
-              </h3>
-              <ul role="list" className="mt-4 space-y-4">
-                {footerLinks.Tools.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-base text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Popular Tools */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+              Popular Tools
+            </h3>
+            <ul className="space-y-3">
+              {popularTools.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+              Categories
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.Categories.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+              Company
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.Company.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+              Legal
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.Legal.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         {/* Bottom section */}
-        <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8 md:flex md:items-center md:justify-between">
-          <div className="flex space-x-6 md:order-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Made with ❤️ for productivity
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              &copy; {currentYear} AsaPhis. All rights reserved.
+            </p>
+            <p className="mt-4 md:mt-0 text-sm text-gray-500 dark:text-gray-400">
+              Made with ❤️ for productivity • 100% Browser-Based • Privacy First
             </p>
           </div>
-          <p className="mt-8 text-xs text-gray-500 dark:text-gray-400 md:mt-0 md:order-1">
-            &copy; {currentYear} AsaPhisTool. All rights reserved.
-          </p>
         </div>
       </div>
     </footer>

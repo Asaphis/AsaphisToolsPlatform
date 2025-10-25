@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Download, Loader2, ImagePlus } from 'lucide-react';
 import { getApiBase } from '@/lib/api';
+import { advancedClientSegmentation } from '@/lib/segmentation';
 
 interface BackgroundOption {
   id: string;
@@ -32,7 +33,7 @@ export function BackgroundRemover() {
     }
   };
 
-  // Handle background removal with backend API
+// Handle background removal with backend API or client-side fallback
   const handleRemoveBackground = async () => {
     if (!image || !fileInputRef.current?.files?.[0]) return;
 
@@ -40,39 +41,78 @@ export function BackgroundRemover() {
     setProcessedImage(null);
     setError(null);
 
+    const runClientSide = async () => {
+      try {
+        // Draw uploaded image to canvas
+        const file = fileInputRef.current!.files![0];
+        const imgEl = new Image();
+        imgEl.crossOrigin = 'anonymous';
+        const dataUrl = URL.createObjectURL(file);
+        await new Promise<void>((resolve, reject) => {
+          imgEl.onload = () => resolve();
+          imgEl.onerror = () => reject(new Error('Failed to load image'));
+          imgEl.src = dataUrl;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = imgEl.width;
+        canvas.height = imgEl.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas not supported');
+        ctx.drawImage(imgEl, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Compute foreground mask in-browser
+        const mask = await advancedClientSegmentation(imgData, { tolerance: 28 });
+
+        // Compose transparent PNG using mask as alpha
+        const outData = ctx.createImageData(canvas.width, canvas.height);
+        for (let i = 0; i < canvas.width * canvas.height; i++) {
+          outData.data[i * 4] = imgData.data[i * 4];
+          outData.data[i * 4 + 1] = imgData.data[i * 4 + 1];
+          outData.data[i * 4 + 2] = imgData.data[i * 4 + 2];
+          outData.data[i * 4 + 3] = mask[i];
+        }
+        ctx.putImageData(outData, 0, 0);
+        const outPng = canvas.toDataURL('image/png');
+        setProcessedImage(outPng);
+      } catch (e: any) {
+        setError(e?.message || 'Client-side processing failed');
+      }
+    };
+
     try {
       const file = fileInputRef.current.files[0];
       const apiBase = getApiBase();
 
-      if (!apiBase || !apiBase.startsWith('http')) {
-        setError('Background removal API is not configured. Please set NEXT_PUBLIC_API_URL in .env.local');
-        setLoading(false);
-        return;
-      }
+      if (apiBase && apiBase.startsWith('http')) {
+        const formData = new FormData();
+        formData.append('image', file);
 
-      const formData = new FormData();
-      formData.append('image', file);
+        const response = await fetch(`${apiBase}/files/remove-background`, {
+          method: 'POST',
+          body: formData,
+        });
 
-      const response = await fetch(`${apiBase}/api/remove-bg`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-
-        if (result.status === 'success' && result.image) {
-          setProcessedImage(result.image);
-        } else if (result.error) {
-          setError(result.error);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.image) {
+            setProcessedImage(result.image);
+          } else if (result.error) {
+            // Fallback to client-side if backend returns error
+            await runClientSide();
+          }
+        } else {
+          // Fallback to client-side if server error
+          await runClientSide();
         }
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        setError(errorData.error || `Server error: ${response.status}`);
+        // No backend configured -> client-side processing
+        await runClientSide();
       }
     } catch (err: any) {
       console.error('Background removal failed:', err);
-      setError(err.message || 'Failed to connect to background removal service.');
+      await runClientSide();
     } finally {
       setLoading(false);
     }
@@ -181,9 +221,12 @@ export function BackgroundRemover() {
       <div className="max-w-6xl w-full flex flex-col md:flex-row items-center justify-between gap-10">
         {/* LEFT SECTION */}
         <div className="flex flex-col space-y-5 md:w-1/2">
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white">
-            Background Remover
-          </h1>
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-sky-500 to-violet-500 text-white flex items-center justify-center shadow-lg text-2xl">✂️</div>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+              Background Remover
+            </h1>
+          </div>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Instantly remove or replace backgrounds — free, fast, and AI-powered ✨
           </p>

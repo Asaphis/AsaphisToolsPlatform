@@ -428,16 +428,6 @@ export function WorkflowBuilder() {
               </label>
               <span className="text-xs text-gray-500 dark:text-gray-400">Selected files: {selectedFiles.length}</span>
             </div>
-              <input
-                type="checkbox"
-                checked={currentWorkflow.isPublic}
-                onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, isPublic: e.target.checked }))}
-                className="rounded border-gray-300 dark:border-gray-600"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                Make public
-              </span>
-            </label>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => executeWorkflow(selectedFiles)}

@@ -1,120 +1,45 @@
-import * as ort from 'onnxruntime-web';
+// NOTE: Avoid importing 'onnxruntime-web' at build time to prevent ESM bundling issues.
+// The AI segmentation helpers are stubbed until an ONNX model is explicitly enabled.
 
-// Configure ONNX Runtime
-if (typeof window !== 'undefined') {
-  ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/';
-}
-
-let modelSession: ort.InferenceSession | null = null;
 let isLoading = false;
 
 /**
- * Load the segmentation model (MODNet-style lightweight model)
- * In production, host your own ONNX model file
+ * Load the segmentation model (stub). Replace with ONNX load to enable AI.
  */
-export async function loadSegmentationModel(): Promise<ort.InferenceSession> {
-  if (modelSession) return modelSession;
+export async function loadSegmentationModel(): Promise<any> {
   if (isLoading) {
-    // Wait for existing load
     await new Promise(resolve => setTimeout(resolve, 100));
-    return loadSegmentationModel();
+    return null;
   }
-
   isLoading = true;
   try {
-    // For now, we'll use a placeholder path
-    // You should host your own U²-Net or MODNet ONNX model
-    // Example models:
-    // - MODNet: https://github.com/ZHKKKe/MODNet
-    // - U²-Net: https://github.com/xuebinqin/U-2-Net
-    
-    // For demonstration, we'll create a fallback that uses advanced client-side processing
-    // In production, replace with: await ort.InferenceSession.create('/models/modnet.onnx');
-    
     console.log('AI model loading skipped - using advanced client-side segmentation');
-    return null as any;
+    return null;
   } finally {
     isLoading = false;
   }
 }
 
 /**
- * Preprocess image for model input
+ * Preprocess image for model input (stub). Returns shape info only.
  */
-export function preprocessImage(imageData: ImageData, targetSize: number = 512): {
-  tensor: ort.Tensor;
+export function preprocessImage(imageData: ImageData, _targetSize: number = 512): {
+  tensor: any;
   originalWidth: number;
   originalHeight: number;
 } {
-  const { width, height, data } = imageData;
-  
-  // Resize to model input size
-  const canvas = document.createElement('canvas');
-  canvas.width = targetSize;
-  canvas.height = targetSize;
-  const ctx = canvas.getContext('2d')!;
-  
-  // Create temp canvas with original image
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = width;
-  tempCanvas.height = height;
-  const tempCtx = tempCanvas.getContext('2d')!;
-  tempCtx.putImageData(imageData, 0, 0);
-  
-  // Draw resized
-  ctx.drawImage(tempCanvas, 0, 0, targetSize, targetSize);
-  const resizedData = ctx.getImageData(0, 0, targetSize, targetSize);
-  
-  // Normalize to [-1, 1] and convert to CHW format
-  const float32Data = new Float32Array(3 * targetSize * targetSize);
-  const mean = [0.5, 0.5, 0.5];
-  const std = [0.5, 0.5, 0.5];
-  
-  for (let i = 0; i < targetSize * targetSize; i++) {
-    const r = resizedData.data[i * 4] / 255;
-    const g = resizedData.data[i * 4 + 1] / 255;
-    const b = resizedData.data[i * 4 + 2] / 255;
-    
-    float32Data[i] = (r - mean[0]) / std[0];
-    float32Data[targetSize * targetSize + i] = (g - mean[1]) / std[1];
-    float32Data[targetSize * targetSize * 2 + i] = (b - mean[2]) / std[2];
-  }
-  
-  const tensor = new ort.Tensor('float32', float32Data, [1, 3, targetSize, targetSize]);
-  
-  return { tensor, originalWidth: width, originalHeight: height };
+  const { width, height } = imageData;
+  return { tensor: null, originalWidth: width, originalHeight: height };
 }
 
 /**
- * Run inference on the image
+ * Run inference on the image (stub). Throws until AI is enabled.
  */
 export async function runSegmentation(
-  imageData: ImageData,
-  session: ort.InferenceSession
+  _imageData: ImageData,
+  _session: any
 ): Promise<Uint8ClampedArray> {
-  const { tensor, originalWidth, originalHeight } = preprocessImage(imageData);
-  
-  // Run inference
-  const feeds = { input: tensor };
-  const results = await session.run(feeds);
-  const output = results.output;
-  
-  // Postprocess: resize mask back to original size
-  const maskSize = Math.sqrt(output.data.length);
-  const mask = new Uint8ClampedArray(originalWidth * originalHeight);
-  
-  // Simple nearest-neighbor resize
-  for (let y = 0; y < originalHeight; y++) {
-    for (let x = 0; x < originalWidth; x++) {
-      const srcX = Math.floor((x / originalWidth) * maskSize);
-      const srcY = Math.floor((y / originalHeight) * maskSize);
-      const srcIdx = srcY * maskSize + srcX;
-      const value = Math.max(0, Math.min(1, output.data[srcIdx] as number));
-      mask[y * originalWidth + x] = Math.round(value * 255);
-    }
-  }
-  
-  return mask;
+  throw new Error('AI segmentation is not enabled. Use advancedClientSegmentation fallback.');
 }
 
 /**
