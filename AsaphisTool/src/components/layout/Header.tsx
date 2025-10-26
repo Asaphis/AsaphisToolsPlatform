@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Button } from '@/components/ui/button';
 
 type Category = { id: string; name: string };
 
@@ -40,121 +41,80 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <Image 
-                src="/AsaphistoolLogo.png" 
-                alt="AsaPhisTool Logo" 
-                width={40} 
-                height={40}
-                className="h-10 w-10 object-contain"
-                priority
-              />
-              <span className="hidden sm:block font-bold text-xl text-gray-900 dark:text-white">
-                AsaPhisTool
-              </span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 hover-elevate rounded-md px-2 py-1">
+          <span className="relative inline-flex items-center justify-center w-8 h-8 rounded-md overflow-hidden">
+            <span className="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-700" />
+            <span className="relative text-white font-bold text-lg">A</span>
+          </span>
+          <span className="font-bold text-xl">AsaphisTool</span>
+        </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${
-                  item.current
-                    ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-gray-600 dark:text-gray-300'
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Search Bar - Hidden on mobile */}
-          <div className="hidden lg:block flex-1 max-w-md mx-8">
-            <SearchBar />
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            
-            {/* Mobile menu button */}
-            <button
-              type="button"
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`text-sm font-medium transition-colors ${
+                item.current ? 'text-foreground' : 'text-foreground/80 hover:text-foreground'
+              }`}
             >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-              <svg
-                className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Search Bar - Hidden on mobile */}
+        <div className="hidden lg:block flex-1 max-w-md mx-6">
+          <SearchBar />
         </div>
 
-        {/* Mobile menu */}
-        <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-800">
-            {/* Mobile Search */}
-            <div className="lg:hidden mb-4">
-              <SearchBar />
-            </div>
-            
-            {/* Mobile Navigation */}
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  item.current
-                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
+        {/* Right side actions */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Button className="hidden md:inline-flex bg-gradient-to-r from-purple-600 to-purple-700" asChild>
+            <Link href="/tools">Get Started</Link>
+          </Button>
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center justify-center p-2 hover-elevate rounded-md"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <svg className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
-            {/* Mobile Quick Links */}
-            <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
-              <div className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Quick Links
-              </div>
-              {categories.slice(0, 5).map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/category/${category.id}`}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {category.name} Tools
-                </Link>
-              ))}
-            </div>
+      {/* Mobile menu */}
+      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
+        <div className="px-4 py-4 border-t">
+          <div className="mb-4"><SearchBar /></div>
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                item.current ? 'bg-accent text-foreground' : 'text-foreground/80 hover:text-foreground hover:bg-accent'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+          <div className="mt-4">
+            <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700" asChild>
+              <Link href="/tools">Get Started</Link>
+            </Button>
           </div>
         </div>
       </div>
