@@ -26,3 +26,6 @@ Thumbs.db
 *.zip
 *.7z
 *.rar
+
+# Ignore extracted UI reference pack
+ModernUIRefresh/
