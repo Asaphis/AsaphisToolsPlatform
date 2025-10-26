@@ -24,13 +24,13 @@ export default async function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 text-white flex items-center justify-center text-3xl shadow-lg">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 text-white flex items-center justify-center text-3xl shadow-lg">
                 🛠️
               </div>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
               Free Online Tools for
-              <span className="block bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
                 Everything You Need
               </span>
             </h1>

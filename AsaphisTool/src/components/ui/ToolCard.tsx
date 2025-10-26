@@ -10,7 +10,7 @@ export function ToolCard({ tool, featured = false }: ToolCardProps) {
   return (
     <Link
       href={`/tools/${tool.slug}`}
-      className={`tool-card block card p-5 hover:border-teal-300 dark:hover:border-teal-600 ${featured ? 'ring-1 ring-teal-100 dark:ring-teal-900' : ''}`}
+      className={`tool-card block card p-5 hover:border-primary/40 dark:hover:border-primary/60 ${featured ? 'ring-1 ring-primary/10 dark:ring-primary/20' : ''}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
