@@ -145,6 +145,60 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 -- ============================================
+-- DONATIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS donations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  amount NUMERIC(12,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'USD',
+  payment_method VARCHAR(50),
+  status VARCHAR(50) DEFAULT 'pending', -- pending, completed, failed
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- WITHDRAWALS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS withdrawals (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  amount NUMERIC(12,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'USD',
+  method VARCHAR(50),
+  details JSONB DEFAULT '{}'::jsonb,
+  status VARCHAR(50) DEFAULT 'requested', -- requested, approved, declined, paid
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- REVENUE TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS revenue (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  amount NUMERIC(12,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'USD',
+  source VARCHAR(100), -- 'adsense', 'direct', 'stripe', 'crypto', etc.
+  meta JSONB DEFAULT '{}'::jsonb,
+  recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- AD PERFORMANCE TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS ad_performance (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  ad_id UUID REFERENCES ads(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  impressions INTEGER DEFAULT 0,
+  clicks INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+
+-- ============================================
 -- INDEXES for performance
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_tools_category ON tools(category);
@@ -186,6 +240,18 @@ CREATE TRIGGER update_ads_updated_at BEFORE UPDATE ON ads
 CREATE TRIGGER update_blog_posts_updated_at BEFORE UPDATE ON blog_posts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_donations_updated_at BEFORE UPDATE ON donations
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_withdrawals_updated_at BEFORE UPDATE ON withdrawals
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_revenue_updated_at BEFORE UPDATE ON revenue
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ad_performance_updated_at BEFORE UPDATE ON ad_performance
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ============================================
@@ -200,6 +266,10 @@ ALTER TABLE user_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE revenue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ad_performance ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for active tools
 CREATE POLICY "Allow public read access to active tools"
@@ -244,6 +314,46 @@ CREATE POLICY "Users can view own history"
 -- This is a basic example, adjust based on your admin implementation
 CREATE POLICY "Admins have full access to tools"
   ON tools
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid()
+      AND users.is_admin = TRUE
+    )
+  );
+
+CREATE POLICY "Admins have full access to donations"
+  ON donations
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid()
+      AND users.is_admin = TRUE
+    )
+  );
+
+CREATE POLICY "Admins have full access to withdrawals"
+  ON withdrawals
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid()
+      AND users.is_admin = TRUE
+    )
+  );
+
+CREATE POLICY "Admins have full access to revenue"
+  ON revenue
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid()
+      AND users.is_admin = TRUE
+    )
+  );
+
+CREATE POLICY "Admins have full access to ad_performance"
+  ON ad_performance
   USING (
     EXISTS (
       SELECT 1 FROM users

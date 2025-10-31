@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+export type AdSlotType = 'header' | 'sidebar' | 'footer' | 'inContent';
+
 interface AdBannerProps {
-  slot: 'header' | 'sidebar' | 'footer' | 'inContent';
+  slot: AdSlotType;
   className?: string;
 }
 
-const SLOT_ENV_MAP: Record<AdBannerProps['slot'], string> = {
+const SLOT_ENV_MAP: Record<AdSlotType, string> = {
   header: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HEADER || '',
   sidebar: process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR || '',
   footer: process.env.NEXT_PUBLIC_ADSENSE_SLOT_FOOTER || '',
@@ -42,6 +44,12 @@ export function AdBanner({ slot, className = '' }: AdBannerProps) {
     },
   } as const;
 
+  // Ensure slot is a valid value
+  if (!Object.keys(adConfig).includes(slot)) {
+    console.error(`Invalid ad slot: ${slot}. Must be one of: ${Object.keys(adConfig).join(', ')}`);
+    return null;
+  }
+
   const config = adConfig[slot];
   const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -63,17 +71,17 @@ export function AdBanner({ slot, className = '' }: AdBannerProps) {
     return (
       <div
         ref={ref}
-        className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg my-8 ${className}`}
+        className={`flex items-center justify-center bg-muted border-2 border-dashed border-border rounded-lg my-8 ${className}`}
         style={{
           width: config.width,
           height: config.height,
           maxWidth: '100%',
-          margin: slot === 'inContent' ? '2rem auto' : '2rem auto',
+          margin: '2rem auto',
         }}
       >
         <div className="text-center p-4">
-          <div className="text-gray-500 dark:text-gray-400 font-medium mb-1">{config.text}</div>
-          <div className="text-xs text-gray-400 dark:text-gray-500">{config.description}</div>
+          <div className="text-foreground/70 font-medium mb-1">{config.text}</div>
+          <div className="text-xs text-foreground/60">{config.description}</div>
         </div>
       </div>
     );

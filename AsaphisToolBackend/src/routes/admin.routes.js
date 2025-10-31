@@ -9,6 +9,14 @@ const router = express.Router();
 // All admin routes require admin authentication
 router.use(authenticateAdmin);
 
+// If Supabase admin client isn't configured, return 503 for admin endpoints
+router.use((req, res, next) => {
+  if (!supabaseAdmin) {
+    return next(new ApiError(503, 'Database not configured'));
+  }
+  next();
+});
+
 // ==================== DASHBOARD ====================
 
 // GET /api/v1/admin/dashboard - Get dashboard statistics

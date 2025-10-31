@@ -24,11 +24,14 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import userRoutes from './routes/user.routes.js';
 import fileRoutes from './routes/file.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import paymentsRoutes from './routes/payments.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import utilsRoutes from './routes/utils.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import imageRoutes from './routes/image.routes.js';
 import convertRoutes from './routes/convert.routes.js';
+import documentRoutes from './routes/document.routes.js';
+import iconRoutes from './routes/icon.routes.js';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -37,18 +40,40 @@ import { rateLimiter } from './middleware/rateLimiter.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Create uploads directory if it doesn't exist
+import fs from 'fs';
+const uploadsDir = join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // CORS configuration
-app.use(cors({
+const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
+
+// Basic middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(compression());
+app.use(morgan('dev'));
+app.use(rateLimiter);
+
+// Mount routes (mounted below with API_PREFIX)
+
+// Error handling
+app.use(errorHandler);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -95,6 +120,7 @@ app.use(`${API_PREFIX}/convert`, convertRoutes);
 app.use(`${API_PREFIX}/admin`, adminRoutes);
 app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use(`${API_PREFIX}/utils`, utilsRoutes);
+app.use(`${API_PREFIX}/payments`, paymentsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

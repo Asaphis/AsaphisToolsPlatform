@@ -142,12 +142,24 @@ router.post('/remove-background', optionalAuth, upload.single('image'), async (r
 
     const command = `python "${pythonScript}" "${inputPath}" "${outputPath}"`;
     
+    console.log('Executing command:', command);
+    
     try {
-      await execPromise(command);
+      const { stdout, stderr } = await execPromise(command);
+      console.log('Python stdout:', stdout);
+      if (stderr) console.error('Python stderr:', stderr);
+      
+      // Check if output file was created
+      if (!fs.existsSync(outputPath)) {
+        console.error('Output file not created at:', outputPath);
+        throw new Error('Background removal failed - output file not created');
+      }
       
       // Read the processed image
       const processedImage = fs.readFileSync(outputPath);
+      console.log('Processed image size:', processedImage.length, 'bytes');
       const base64Image = `data:image/png;base64,${processedImage.toString('base64')}`;
+      console.log('Base64 image length:', base64Image.length);
       
       // Clean up files
       cleanupFile(req.file.path);
@@ -160,7 +172,9 @@ router.post('/remove-background', optionalAuth, upload.single('image'), async (r
       });
     } catch (execError) {
       console.error('Python execution error:', execError);
-      throw new ApiError(500, 'Background removal failed. Make sure Python and required packages are installed.');
+      console.error('Error details:', execError.message);
+      if (execError.stderr) console.error('Error stderr:', execError.stderr);
+      throw new ApiError(500, `Background removal failed: ${execError.message}`);
     }
   } catch (error) {
     if (req.file) cleanupFile(req.file.path);

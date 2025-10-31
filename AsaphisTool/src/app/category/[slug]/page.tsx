@@ -116,9 +116,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const categoryInfo = categoryDescriptions[params.slug as keyof typeof categoryDescriptions];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <div className="bg-white/95 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
@@ -126,19 +126,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 🗂️
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
               {category.name} Tools
             </h1>
-            <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="mt-4 text-lg sm:text-xl text-foreground/70 max-w-3xl mx-auto">
               {categoryInfo?.description || `Discover ${category.count} powerful ${category.name.toLowerCase()} tools for all your needs.`}
             </p>
             <div className="mt-6 flex items-center justify-center gap-3">
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200">
-                {category.count} Tools Available
-              </span>
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
-                100% Free
-              </span>
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-muted text-foreground">{category.count} Tools Available</span>
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-muted text-foreground">100% Free</span>
             </div>
           </div>
         </div>

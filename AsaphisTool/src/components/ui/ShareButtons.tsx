@@ -60,11 +60,8 @@ export function ShareButtons({ url, title, description = '' }: ShareButtonsProps
 
   return (
     <div className="flex items-center space-x-3">
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        Share:
-      </span>
-      
-      {/* Social Share Buttons */}
+      <span className="text-sm font-medium text-foreground/80">Share:</span>
+
       <div className="flex items-center space-x-2">
         {shareButtons.map((button) => (
           <button
@@ -76,22 +73,17 @@ export function ShareButtons({ url, title, description = '' }: ShareButtonsProps
             {button.icon}
           </button>
         ))}
-        
-        {/* Copy Link Button */}
+
         <button
           onClick={copyToClipboard}
-          className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium transition-colors"
+          className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-muted text-foreground hover:bg-muted/90 transition-colors"
           title="Copy link"
         >
           {copied ? '✓' : '🔗'}
         </button>
       </div>
-      
-      {copied && (
-        <span className="text-sm text-green-600 dark:text-green-400 animate-fade-in">
-          Copied!
-        </span>
-      )}
+
+      {copied && <span className="text-sm text-green-600 animate-fade-in">Copied!</span>}
     </div>
   );
 }

@@ -177,8 +177,8 @@ export function BatchProcessor({
         {...getRootProps()}
         className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
           isDragActive
-            ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
+            ? 'border-primary-400 bg-primary-50/20'
+            : 'border-border hover:border-primary-300'
         }`}
       >
         <input {...getInputProps()} />
@@ -200,7 +200,7 @@ export function BatchProcessor({
 
       {/* File List */}
       {files.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Files ({files.length})
@@ -217,7 +217,7 @@ export function BatchProcessor({
                   </button>
                   <button
                     onClick={clearAll}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                    className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/90"
                   >
                     Clear All
                   </button>
@@ -236,11 +236,11 @@ export function BatchProcessor({
           {/* Overall Progress */}
           {isProcessing && (
             <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <div className="flex justify-between text-sm text-foreground/70 mb-2">
                 <span>{processingText}...</span>
                 <span>{completedCount}/{totalFiles} completed</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className="bg-primary-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${overallProgress}%` }}
@@ -254,43 +254,41 @@ export function BatchProcessor({
             {files.map((batchFile) => (
               <div
                 key={batchFile.id}
-                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                className="flex items-center justify-between p-4 bg-card rounded-lg"
               >
                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(batchFile.status)}`}></div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {batchFile.file.name}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-foreground/70">
                       {(batchFile.file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
                 </div>
 
-                {/* Progress */}
                 {batchFile.status === 'processing' && (
                   <div className="w-24 mx-4">
-                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                    <div className="w-full bg-muted rounded-full h-1.5">
                       <div
-                        className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                        className="bg-primary-600 h-1.5 rounded-full transition-all duration-300"
                         style={{ width: `${batchFile.progress}%` }}
                       ></div>
                     </div>
                   </div>
                 )}
 
-                {/* Status */}
                 <div className="flex items-center space-x-2">
                   {batchFile.status === 'completed' && (
-                    <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
+                    <span className="text-green-600 text-sm">✓</span>
                   )}
                   {batchFile.status === 'error' && (
-                    <span className="text-red-600 dark:text-red-400 text-sm">✗</span>
+                    <span className="text-red-600 text-sm">✗</span>
                   )}
                   <button
                     onClick={() => removeFile(batchFile.id)}
-                    className="text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                    className="text-foreground/60 hover:text-red-600"
                   >
                     ✕
                   </button>

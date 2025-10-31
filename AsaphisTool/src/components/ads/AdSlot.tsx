@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import DirectAd from '@/components/ads/DirectAd';
-import { AdBanner } from '@/components/ui/AdBanner';
-
-type SlotKey = 'header' | 'sidebar' | 'footer' | 'inContent';
+import { AdBanner, AdSlotType } from '@/components/ui/AdBanner';
 
 interface AdSlotProps {
-  slot: SlotKey;
+  slot: AdSlotType;
   className?: string;
 }
 

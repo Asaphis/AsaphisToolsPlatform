@@ -76,9 +76,9 @@ if (loading) {
 
   if (!stats) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No analytics yet</h3>
-        <p className="text-gray-600 dark:text-gray-400">Use the tools and we’ll display your usage stats here. Data is stored locally or can be provided by your backend when connected.</p>
+      <div className="bg-card rounded-xl border border-border p-6 text-center">
+        <h3 className="text-lg font-semibold text-foreground mb-2">No analytics yet</h3>
+        <p className="text-foreground/70">Use the tools and we’ll display your usage stats here. Data is stored locally or can be provided by your backend when connected.</p>
       </div>
     );
   }
@@ -88,12 +88,8 @@ if (loading) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            📊 Analytics Dashboard
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Track your productivity and tool usage insights
-          </p>
+          <h2 className="text-2xl font-bold text-foreground">📊 Analytics Dashboard</h2>
+          <p className="text-foreground/70 mt-1">Track your productivity and tool usage insights</p>
         </div>
         <div className="flex items-center space-x-2">
           {(['week', 'month', 'year', 'all'] as const).map((range) => (
@@ -101,10 +97,10 @@ if (loading) {
               key={range}
               onClick={() => setTimeRange(range)}
               className={`px-3 py-1 text-sm rounded-md capitalize transition-colors ${
-                timeRange === range
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
+                  timeRange === range
+                    ? 'bg-primary-600 text-white'
+                    : 'text-foreground/70 hover:bg-muted'
+                }`}
             >
               {range === 'all' ? 'All Time' : `This ${range}`}
             </button>
@@ -157,27 +153,21 @@ if (loading) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Weekly Usage Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-            Weekly Usage Pattern
-          </h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-6">Weekly Usage Pattern</h3>
           <div className="space-y-4">
             {stats.weeklyUsage.map((day) => (
               <div key={day.day} className="flex items-center space-x-4">
-                <div className="w-12 text-sm text-gray-600 dark:text-gray-400">
-                  {day.day}
-                </div>
+                <div className="w-12 text-sm text-foreground/70">{day.day}</div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div className="flex-1 bg-muted rounded-full h-2">
                       <div
                         className="bg-primary-600 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${(day.count / getMaxUsage()) * 100}%` }}
                       ></div>
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 w-8">
-                      {day.count}
-                    </div>
+                    <div className="text-sm text-foreground/70 w-8">{day.count}</div>
                   </div>
                 </div>
               </div>
@@ -186,10 +176,8 @@ if (loading) {
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-            Tool Categories
-          </h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-6">Tool Categories</h3>
           <div className="space-y-4">
             {stats.categoryBreakdown.map((category) => (
               <div key={category.category} className="flex items-center justify-between">
@@ -201,20 +189,13 @@ if (loading) {
                     {category.category === 'Generator' && '⚡'}
                     {category.category === 'Developer' && '💻'}
                   </div>
-                  <span className="text-gray-900 dark:text-white font-medium">
-                    {category.category}
-                  </span>
+                  <span className="text-foreground font-medium">{category.category}</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-primary-600 h-2 rounded-full"
-                      style={{ width: `${category.percentage}%` }}
-                    ></div>
+                  <div className="w-20 bg-muted rounded-full h-2">
+                    <div className="bg-primary-600 h-2 rounded-full" style={{ width: `${category.percentage}%` }}></div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 w-12">
-                    {category.count}
-                  </div>
+                  <div className="text-sm text-foreground/70 w-12">{category.count}</div>
                 </div>
               </div>
             ))}
@@ -223,90 +204,50 @@ if (loading) {
       </div>
 
       {/* Most Used Tools */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-          Most Used Tools
-        </h3>
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-6">Most Used Tools</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {stats.mostUsedTools.map((tool, index) => (
-            <div key={tool.toolId} className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div key={tool.toolId} className="text-center p-4 bg-card rounded-lg">
               <div className="text-3xl mb-2">{tool.icon}</div>
-              <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
-                {tool.toolName}
-              </h4>
-              <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                {tool.count}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                #{index + 1} most used
-              </p>
+              <h4 className="font-medium text-foreground text-sm mb-1">{tool.toolName}</h4>
+              <p className="text-2xl font-bold text-primary-600">{tool.count}</p>
+              <p className="text-xs text-foreground/70">#{index + 1} most used</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Achievements */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            🏆 Achievements
-          </h3>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {achievements.filter(a => a.unlocked).length} of {achievements.length} unlocked
-          </div>
+          <h3 className="text-lg font-semibold text-foreground">🏆 Achievements</h3>
+          <div className="text-sm text-foreground/70">{achievements.filter(a => a.unlocked).length} of {achievements.length} unlocked</div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements.map((achievement) => (
             <div
               key={achievement.id}
-              className={`p-4 rounded-lg border ${
-                achievement.unlocked
-                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                  : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
-              }`}
-            >
+              className={`p-4 rounded-lg border ${achievement.unlocked ? 'bg-green-50 border-green-200' : 'bg-card border-border'}`}>
               <div className="flex items-start justify-between mb-2">
-                <div className={`text-2xl ${achievement.unlocked ? '' : 'grayscale opacity-50'}`}>
-                  {achievement.icon}
-                </div>
-                {achievement.unlocked && (
-                  <div className="text-green-600 dark:text-green-400 text-sm">
-                    ✓
-                  </div>
-                )}
+                <div className={`text-2xl ${achievement.unlocked ? '' : 'grayscale opacity-50'}`}>{achievement.icon}</div>
+                {achievement.unlocked && <div className="text-green-600 text-sm">✓</div>}
               </div>
-              <h4 className={`font-medium mb-1 ${
-                achievement.unlocked 
-                  ? 'text-gray-900 dark:text-white' 
-                  : 'text-gray-600 dark:text-gray-400'
-              }`}>
-                {achievement.title}
-              </h4>
-              <p className={`text-sm mb-3 ${
-                achievement.unlocked 
-                  ? 'text-gray-700 dark:text-gray-300' 
-                  : 'text-gray-500 dark:text-gray-500'
-              }`}>
-                {achievement.description}
-              </p>
+              <h4 className="font-medium mb-1 text-foreground">{achievement.title}</h4>
+              <p className="text-sm mb-3 text-foreground/80">{achievement.description}</p>
               {achievement.progress && !achievement.unlocked && (
                 <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between text-xs text-foreground/70">
                     <span>Progress</span>
                     <span>{achievement.progress.current}/{achievement.progress.target}</span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                    <div
-                      className="bg-primary-600 h-2 rounded-full"
-                      style={{ width: `${(achievement.progress.current / achievement.progress.target) * 100}%` }}
-                    ></div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-primary-600 h-2 rounded-full" style={{ width: `${(achievement.progress.current / achievement.progress.target) * 100}%` }}></div>
                   </div>
                 </div>
               )}
               {achievement.unlocked && achievement.unlockedAt && (
-                <div className="text-xs text-green-600 dark:text-green-400">
-                  Unlocked {achievement.unlockedAt.toLocaleDateString()}
-                </div>
+                <div className="text-xs text-green-600">Unlocked {achievement.unlockedAt.toLocaleDateString()}</div>
               )}
             </div>
           ))}
@@ -314,13 +255,11 @@ if (loading) {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-          Recent Activity
-        </h3>
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-6">Recent Activity</h3>
         <div className="space-y-4">
           {stats.recentActivity.map((activity, index) => (
-            <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div key={index} className="flex items-center space-x-4 p-3 bg-card rounded-lg">
               <div className="text-2xl">
                 {activity.tool === 'Image Compressor' && '🗜️'}
                 {activity.tool === 'PDF Merger' && '📄'}
@@ -329,13 +268,11 @@ if (loading) {
                 {activity.tool === 'QR Code Generator' && '📱'}
               </div>
               <div className="flex-1">
-                <p className="text-gray-900 dark:text-white">
+                <p className="text-foreground">
                   <span className="font-medium">{activity.action}</span> {activity.fileCount} file{activity.fileCount !== 1 ? 's' : ''}
                   {activity.sizeSaved && ` • Saved ${formatFileSize(activity.sizeSaved)}`}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {activity.tool} • {activity.date.toLocaleDateString()}
-                </p>
+                <p className="text-sm text-foreground/70">{activity.tool} • {activity.date.toLocaleDateString()}</p>
               </div>
             </div>
           ))}
@@ -343,20 +280,12 @@ if (loading) {
       </div>
 
       {/* Export Options */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Export Your Data
-        </h3>
+      <div className="bg-muted rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Export Your Data</h3>
         <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-            📊 Export as PDF Report
-          </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-            📋 Export as CSV
-          </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            📱 Share Achievements
-          </button>
+          <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">📊 Export as PDF Report</button>
+          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">📋 Export as CSV</button>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">📱 Share Achievements</button>
         </div>
       </div>
     </div>

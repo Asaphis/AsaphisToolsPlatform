@@ -35,9 +35,9 @@ export default async function ToolsPage() {
   const featuredTools = tools.filter(tool => tool.featured);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <div className="bg-white/95 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
@@ -45,10 +45,10 @@ export default async function ToolsPage() {
                 🧰
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
               All Tools
             </h1>
-            <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="mt-4 text-lg sm:text-xl text-foreground/70 max-w-3xl mx-auto">
               Browse our complete collection of free online tools. From image compression to PDF editing,
               find the perfect tool for your needs.
             </p>
@@ -61,28 +61,16 @@ export default async function ToolsPage() {
             {/* Stats */}
             <div className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
-                  {tools.length}+
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Total Tools
-                </div>
+                <div className="text-3xl font-bold text-primary-600">{tools.length}+</div>
+                <div className="text-sm text-foreground/70 mt-1">Total Tools</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
-                  {categories.length}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Categories
-                </div>
+                <div className="text-3xl font-bold text-primary-600">{categories.length}</div>
+                <div className="text-sm text-foreground/70 mt-1">Categories</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-sky-600 dark:text-sky-400">
-                  100%
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Free
-                </div>
+                <div className="text-3xl font-bold text-primary-600">100%</div>
+                <div className="text-sm text-foreground/70 mt-1">Free</div>
               </div>
             </div>
           </div>
@@ -125,7 +113,7 @@ export default async function ToolsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {featuredTools.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} featured />
+                <ToolCard key={tool.id} tool={tool} />
               ))}
             </div>
           </section>

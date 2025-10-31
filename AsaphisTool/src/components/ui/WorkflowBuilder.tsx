@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// drag-and-drop was removed for simpler UI (keeps behavior but removes DnD complexity)
 import { compressImageFile, resizeImageFile, mergePdfFiles } from '@/lib/processors';
 
 interface WorkflowStep {
@@ -30,7 +30,6 @@ const availableTools = [
   { id: 'image-compressor', name: 'Image Compressor', icon: '🗜️', category: 'image' },
   { id: 'image-resizer', name: 'Image Resizer', icon: '📏', category: 'image' },
   { id: 'image-format-converter', name: 'Format Converter', icon: '🔄', category: 'image' },
-  { id: 'background-remover', name: 'Background Remover', icon: '✂️', category: 'image' },
   { id: 'pdf-merger', name: 'PDF Merger', icon: '📄', category: 'pdf' },
   { id: 'pdf-compressor', name: 'PDF Compressor', icon: '🗜️', category: 'pdf' },
 ];
@@ -63,10 +62,9 @@ export function WorkflowBuilder() {
       ]
     },
     {
-      name: 'Social Media Ready',
-      description: 'Remove background → Resize for platforms → Compress',
+      name: 'Social Media Ready', 
+      description: 'Resize for platforms → Compress',
       steps: [
-        { toolId: 'background-remover', settings: {} },
         { toolId: 'image-resizer', settings: { width: 1080, height: 1080 } },
         { toolId: 'image-compressor', settings: { quality: 90 } }
       ]
@@ -215,24 +213,20 @@ export function WorkflowBuilder() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Workflow Builder
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Create custom tool chains to automate your file processing
-          </p>
+          <h2 className="text-2xl font-bold text-foreground">Workflow Builder</h2>
+          <p className="text-foreground/70 mt-1">Create custom tool chains to automate your file processing</p>
         </div>
         <div className="flex items-center space-x-3">
           <input ref={fileInputRef} type="file" multiple onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))} className="hidden" />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+            className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/90"
           >
             📁 Select Files
           </button>
           <button
             onClick={() => setShowTemplates(!showTemplates)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/90"
           >
             📋 Templates
           </button>
@@ -255,40 +249,21 @@ export function WorkflowBuilder() {
 
       {/* Templates Modal */}
       {showTemplates && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Workflow Templates
-            </h3>
-            <button
-              onClick={() => setShowTemplates(false)}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              ✕
-            </button>
+            <h3 className="text-lg font-semibold text-foreground">Workflow Templates</h3>
+            <button onClick={() => setShowTemplates(false)} className="text-foreground/60 hover:text-foreground">✕</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {workflowTemplates.map((template, index) => (
-              <div
-                key={index}
-                className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => loadTemplate(template)}
-              >
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  {template.name}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  {template.description}
-                </p>
+              <div key={index} className="p-4 border border-border rounded-lg hover:bg-muted cursor-pointer" onClick={() => loadTemplate(template)}>
+                <h4 className="font-medium text-foreground mb-2">{template.name}</h4>
+                <p className="text-sm text-foreground/70 mb-3">{template.description}</p>
                 <div className="flex items-center space-x-2">
                   {template.steps.map((step, stepIndex) => (
                     <div key={stepIndex} className="flex items-center">
-                      <span className="text-xs bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded">
-                        {availableTools.find(t => t.id === step.toolId)?.icon}
-                      </span>
-                      {stepIndex < template.steps.length - 1 && (
-                        <span className="mx-1 text-gray-400">→</span>
-                      )}
+                      <span className="text-xs bg-muted px-2 py-1 rounded">{availableTools.find(t => t.id === step.toolId)?.icon}</span>
+                      {stepIndex < template.steps.length - 1 && <span className="mx-1 text-foreground/50">→</span>}
                     </div>
                   ))}
                 </div>
@@ -300,7 +275,7 @@ export function WorkflowBuilder() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Tool Library */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Available Tools
           </h3>
@@ -308,21 +283,17 @@ export function WorkflowBuilder() {
             {availableTools.map((tool) => (
               <div
                 key={tool.id}
-                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                className="flex items-center justify-between p-3 bg-card rounded-lg hover:bg-muted cursor-pointer"
                 onClick={() => addToolToWorkflow(tool)}
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">{tool.icon}</span>
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {tool.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                      {tool.category}
-                    </p>
+                    <p className="text-sm font-medium text-foreground">{tool.name}</p>
+                    <p className="text-xs text-foreground/70 capitalize">{tool.category}</p>
                   </div>
                 </div>
-                <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
+                <button className="text-primary-600 hover:text-primary-700">
                   ➕
                 </button>
               </div>
@@ -331,10 +302,8 @@ export function WorkflowBuilder() {
         </div>
 
         {/* Workflow Builder */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Current Workflow
-          </h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Current Workflow</h3>
 
           {/* Workflow Info */}
           <div className="space-y-4 mb-6">
@@ -343,74 +312,37 @@ export function WorkflowBuilder() {
               placeholder="Workflow name"
               value={currentWorkflow.name}
               onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground"
             />
             <textarea
               placeholder="Description (optional)"
               value={currentWorkflow.description}
               onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground"
               rows={2}
             />
           </div>
-
-          {/* Workflow Steps */}
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="workflow-steps">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-3 min-h-32"
-                >
-                  {currentWorkflow.steps.length === 0 ? (
-                    <div className="text-center text-gray-500 dark:text-gray-400 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                      Add tools from the left to build your workflow
+          <div className="space-y-3 min-h-32">
+            {currentWorkflow.steps.length === 0 ? (
+              <div className="text-center text-foreground/60 py-8 border-2 border-dashed border-border rounded-lg">
+                Add tools from the left to build your workflow
+              </div>
+            ) : (
+              currentWorkflow.steps.map((step, index) => (
+                <div key={step.id} className="flex items-center justify-between p-3 bg-card rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm text-foreground/70">{index + 1}</span>
+                    <span className="text-xl">{step.icon}</span>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{step.toolName}</p>
+                      {step.conditions && <p className="text-xs text-primary-600">Conditional</p>}
                     </div>
-                  ) : (
-                    currentWorkflow.steps.map((step, index) => (
-                      <Draggable key={step.id} draggableId={step.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg ${
-                              snapshot.isDragging ? 'shadow-lg' : ''
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <span className="text-sm text-gray-500 dark:text-gray-400">
-                                {index + 1}
-                              </span>
-                              <span className="text-xl">{step.icon}</span>
-                              <div>
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {step.toolName}
-                                </p>
-                                {step.conditions && (
-                                  <p className="text-xs text-blue-600 dark:text-blue-400">
-                                    Conditional
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => removeStepFromWorkflow(step.id)}
-                              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))
-                  )}
-                  {provided.placeholder}
+                  </div>
+                  <button onClick={() => removeStepFromWorkflow(step.id)} className="text-red-600 hover:text-red-700">🗑️</button>
                 </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+              ))
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">

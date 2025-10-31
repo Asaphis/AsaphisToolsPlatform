@@ -8,6 +8,16 @@ const router = express.Router();
 // GET /api/v1/tools - Get all tools
 router.get('/', async (req, res, next) => {
   try {
+    // Check if Supabase is configured
+    if (!supabase) {
+      return res.json({
+        success: true,
+        count: 0,
+        tools: [],
+        message: 'Database not configured'
+      });
+    }
+
     const { category, featured, popular, premium, search } = req.query;
 
     let query = supabase
@@ -53,6 +63,10 @@ router.get('/', async (req, res, next) => {
 // GET /api/v1/tools/:slug - Get single tool by slug
 router.get('/:slug', optionalAuth, async (req, res, next) => {
   try {
+    if (!supabase) {
+      throw new ApiError(503, 'Database not configured');
+    }
+
     const { slug } = req.params;
 
     const { data: tool, error } = await supabase
@@ -93,6 +107,14 @@ router.get('/:slug', optionalAuth, async (req, res, next) => {
 // POST /api/v1/tools/:slug/track - Track tool usage
 router.post('/:slug/track', optionalAuth, async (req, res, next) => {
   try {
+    if (!supabase) {
+      // Silently succeed if database is not configured
+      return res.json({
+        success: true,
+        message: 'Tracking disabled - database not configured'
+      });
+    }
+
     const { slug } = req.params;
     const { eventType, eventData } = req.body;
 

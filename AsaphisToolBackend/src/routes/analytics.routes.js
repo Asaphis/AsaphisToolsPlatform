@@ -4,6 +4,14 @@ import { optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// If Supabase client isn't configured, return 503 for analytics endpoints
+router.use((req, res, next) => {
+  if (!supabase) {
+    return next(new ApiError(503, 'Database not configured'));
+  }
+  next();
+});
+
 // POST /api/v1/analytics/track - Track generic analytics event
 router.post('/track', optionalAuth, async (req, res, next) => {
   try {

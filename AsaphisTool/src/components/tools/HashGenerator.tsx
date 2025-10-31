@@ -54,40 +54,68 @@ export function HashGenerator() {
       </div>
 
       {/* Card */}
-      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800 p-6 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Algorithm</label>
-            <select
-              value={alg}
-              onChange={(e)=> setAlg(e.target.value as HashAlg)}
-              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-300"
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left column: Input & Results */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center">
+              <Settings2 className="mr-2 h-5 w-5" />
+              Hash Settings
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Algorithm</label>
+                <select
+                  value={alg}
+                  onChange={(e)=> setAlg(e.target.value as HashAlg)}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
+                >
+                  <option value="SHA-1">SHA-1</option>
+                  <option value="SHA-256">SHA-256</option>
+                  <option value="SHA-384">SHA-384</option>
+                  <option value="SHA-512">SHA-512</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-white rounded-xl shadow p-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center">
+              <PenTool className="mr-2 h-5 w-5" />
+              Input Text
+            </h2>
+            <textarea
+              value={input}
+              onChange={(e)=>setInput(e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
+              placeholder="Enter text to hash..."
+            />
+          </div>
+          
+          <div className="mt-4 flex justify-end">
+            <button 
+              onClick={onHashText}
+              disabled={!input}
+              className={cn(
+                "flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-white transition-all",
+                input ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-300 cursor-not-allowed"
+              )}
             >
-              <option value="SHA-1">SHA-1</option>
-              <option value="SHA-256">SHA-256</option>
-              <option value="SHA-384">SHA-384</option>
-              <option value="SHA-512">SHA-512</option>
-            </select>
+              <Hash className="h-5 w-5" />
+              Process
+            </button>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Text hashing */}
-          <div className="rounded-xl border border-gray-100 dark:border-gray-700 p-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Text</label>
-            <textarea
-              value={input}
-              onChange={(e)=> setInput(e.target.value)}
-              placeholder="Enter text..."
-              className="w-full h-36 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-300"
-            />
-            <button
-              onClick={onHashText}
-              disabled={!input}
-              className="mt-3 inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-gradient-to-r from-sky-500 to-violet-500 hover:from-sky-600 hover:to-violet-600 disabled:opacity-50"
-            >
-              Hash Text
-            </button>
+        {/* Right column: Result */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center">
+              <CircleEqual className="mr-2 h-5 w-5" />
+              Result Hash
+            </h2>
             {hash && (
               <div className="mt-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono text-xs break-all">
                 {hash}

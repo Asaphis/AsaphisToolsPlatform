@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import ToolInputCard from './ToolInputCard';
 import { getApiBase } from "@/lib/api";
 
 // A generic runner that connects many tools to your backend endpoints
@@ -141,213 +142,289 @@ export function RemoteToolRunner({ toolId }: { toolId: string }) {
   const multiple = !!config?.multiple;
 
   return (
-    <div className="space-y-4">
-      {config?.mode === 'text' ? (
-        <>
-          {toolId === 'json-formatter' && (
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={minify} onChange={(e)=>setMinify(e.target.checked)} /> Minify
-              </label>
-            </div>
-          )}
-          {(toolId === 'base64-encoder-decoder' || toolId === 'url-encoder-decoder') && (
-            <div className="flex items-center gap-3">
-              <select className="border rounded px-2 py-1" value={modeValue} onChange={(e)=>setModeValue(e.target.value)}>
-                <option value="encode">Encode</option>
-                <option value="decode">Decode</option>
-              </select>
-            </div>
-          )}
-          {(toolId === 'uuid-generator') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Count</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={uuidCount} onChange={(e)=>setUuidCount(parseInt(e.target.value)||1)} />
-            </div>
-          )}
-          {(toolId === 'password-generator') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Length</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={pwdLen} onChange={(e)=>setPwdLen(parseInt(e.target.value)||16)} />
-            </div>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Left: Input + Preview */}
+      <div className="lg:col-span-8">
+        <div className="bg-white rounded-xl shadow p-6">
+          <h3 className="text-lg font-medium mb-4">Input</h3>
+
+          {config?.mode === 'text' ? (
+            <>
+              {/* Text tools */}
+              <div className="space-y-3">
+                {/* PDF rotate controls */}
+                {toolId === 'rotate-pdf' && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm">Angle</label>
+                      <input type="number" className="w-full border rounded px-2 py-1" value={angle} onChange={(e)=>setAngle(parseInt(e.target.value)||90)} />
+                    </div>
+                    <div>
+                      <label className="text-sm">Pages (e.g., 1-3,5)</label>
+                      <input className="w-full border rounded px-2 py-1" value={ranges} onChange={(e)=>setRanges(e.target.value)} />
+                    </div>
+                  </div>
+                )}
+                {/* PDF crop controls reuse x,y,w,h */}
+                {toolId === 'crop-pdf' && (
+                  <div className="grid grid-cols-4 gap-3">
+                    <div>
+                      <label className="text-sm">Left</label>
+                      <input type="number" className="w-full border rounded px-2 py-1" value={x} onChange={(e)=>setX(parseInt(e.target.value)||0)} />
+                    </div>
+                    <div>
+                      <label className="text-sm">Top</label>
+                      <input type="number" className="w-full border rounded px-2 py-1" value={y} onChange={(e)=>setY(parseInt(e.target.value)||0)} />
+                    </div>
+                    <div>
+                      <label className="text-sm">Right</label>
+                      <input type="number" className="w-full border rounded px-2 py-1" value={w} onChange={(e)=>setW(parseInt(e.target.value)||0)} />
+                    </div>
+                    <div>
+                      <label className="text-sm">Bottom</label>
+                      <input type="number" className="w-full border rounded px-2 py-1" value={h} onChange={(e)=>setH(parseInt(e.target.value)||0)} />
+                    </div>
+                  </div>
+                )}
+                {/* PDF organize order using ranges input */}
+                {toolId === 'organize-pdf' && (
+                  <div>
+                    <label className="text-sm">Order (e.g., 3,1,2)</label>
+                    <input className="w-full border rounded px-2 py-1" value={ranges} onChange={(e)=>setRanges(e.target.value)} />
+                  </div>
+                )}
+                {/* PDF protect/unlock use text field for password */}
+                {(toolId === 'protect-pdf' || toolId === 'unlock-pdf') && (
+                  <div>
+                    <label className="text-sm">Password</label>
+                    <input className="w-full border rounded px-2 py-1" value={text} onChange={(e)=>setText(e.target.value)} />
+                  </div>
+                )}
+                {(toolId === 'base64-encoder-decoder' || toolId === 'url-encoder-decoder') && (
+                  <div className="flex items-center gap-3">
+                    <select className="border rounded px-2 py-1" value={modeValue} onChange={(e)=>setModeValue(e.target.value)}>
+                      <option value="encode">Encode</option>
+                      <option value="decode">Decode</option>
+                    </select>
+                  </div>
+                )}
+
+                {(toolId === 'uuid-generator') && (
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm">Count</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={uuidCount} onChange={(e)=>setUuidCount(parseInt(e.target.value)||1)} />
+                  </div>
+                )}
+
+                {(toolId === 'password-generator') && (
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm">Length</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={pwdLen} onChange={(e)=>setPwdLen(parseInt(e.target.value)||16)} />
+                  </div>
+                )}
+
+                {toolId !== 'password-generator' && toolId !== 'uuid-generator' && (
+                  <textarea
+                    value={text}
+                    onChange={(e)=>setText(e.target.value)}
+                    className="w-full min-h-[160px] border rounded p-3"
+                    placeholder="Enter text here"
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* File input card */}
+              <ToolInputCard
+                id={`file-input-${toolId}`}
+                accept={accept}
+                multiple={multiple}
+                files={files}
+                maxSizeText="Maximum file size: 50MB"
+                onFilesSelected={(list) => { setFiles(list); setDownloadUrl(null); setError(null); }}
+              />
+
+              {/* Contextual controls (remain the same but styled) */}
+              <div className="mt-4 space-y-3">
+                {toolId === 'pdf-splitter' && (
+                  <div>
+                    <label className="text-sm">Ranges</label>
+                    <input className="w-full border rounded px-2 py-1" placeholder="e.g., 1-3,5,7-8" value={ranges} onChange={(e)=>setRanges(e.target.value)} />
+                  </div>
+                )}
+
+                {(toolId === 'video-trim' || toolId === 'trim-video') && (
+                  <div className="flex gap-3">
+                    <label className="text-sm">Start (s)</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={start} onChange={(e)=>setStart(parseFloat(e.target.value)||0)} />
+                    <label className="text-sm">Duration (s)</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={duration} onChange={(e)=>setDuration(parseFloat(e.target.value)||1)} />
+                  </div>
+                )}
+
+                {(toolId === 'video-crop' || toolId === 'crop-video') && (
+                  <div className="flex gap-3 flex-wrap">
+                    <label className="text-sm">W</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={w} onChange={(e)=>setW(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">H</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={h} onChange={(e)=>setH(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">X</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={x} onChange={(e)=>setX(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">Y</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={y} onChange={(e)=>setY(parseInt(e.target.value)||0)} />
+                  </div>
+                )}
+
+                {(toolId === 'video-converter' || toolId === 'mp4-converter' || toolId === 'mov-to-mp4' || toolId === 'video-to-mp3' || toolId === 'mp4-to-mp3' || toolId === 'mp3-to-ogg' || toolId === 'video-to-audio-converter' || toolId === 'audio-converter' || toolId === 'archive-converter') && (
+                  <div>
+                    <label className="text-sm">Format</label>
+                    <select className="w-full border rounded px-2 py-1" value={format} onChange={(e)=>setFormat(e.target.value)}>
+                      <option value="mp4">mp4</option>
+                      <option value="mp3">mp3</option>
+                      <option value="ogg">ogg</option>
+                      <option value="webm">webm</option>
+                      <option value="mkv">mkv</option>
+                    </select>
+                  </div>
+                )}
+
+                {toolId === 'image-compressor' && (
+                  <div className="flex gap-3 items-center">
+                    <label className="text-sm">Quality</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" min={1} max={100} value={quality} onChange={(e)=>setQuality(parseInt(e.target.value)||80)} />
+                    <label className="text-sm">Format</label>
+                    <select className="border rounded px-2 py-1" value={imgFormat} onChange={(e)=>setImgFormat(e.target.value)}>
+                      <option value="jpeg">jpeg</option>
+                      <option value="png">png</option>
+                      <option value="webp">webp</option>
+                    </select>
+                  </div>
+                )}
+
+                {toolId === 'image-resizer' && (
+                  <div className="flex gap-3 flex-wrap">
+                    <label className="text-sm">Width</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={widthPx} onChange={(e)=>setWidthPx(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">Height</label>
+                    <input type="number" className="border rounded px-2 py-1 w-24" value={heightPx} onChange={(e)=>setHeightPx(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">Fit</label>
+                    <select className="border rounded px-2 py-1" value={fit} onChange={(e)=>setFit(e.target.value)}>
+                      <option value="cover">cover</option>
+                      <option value="contain">contain</option>
+                      <option value="fill">fill</option>
+                      <option value="inside">inside</option>
+                      <option value="outside">outside</option>
+                    </select>
+                  </div>
+                )}
+
+                {toolId === 'image-format-converter' && (
+                  <div>
+                    <label className="text-sm">Format</label>
+                    <select className="w-full border rounded px-2 py-1" value={imgFormat} onChange={(e)=>setImgFormat(e.target.value)}>
+                      <option value="jpeg">jpeg</option>
+                      <option value="png">png</option>
+                      <option value="webp">webp</option>
+                      <option value="gif">gif</option>
+                    </select>
+                  </div>
+                )}
+
+                {(toolId === 'crop-image') && (
+                  <div className="flex gap-3">
+                    <label className="text-sm">W</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={w} onChange={(e)=>setW(parseInt(e.target.value)||0)} />
+                    <label className="text-sm">H</label>
+                    <input type="number" className="border rounded px-2 py-1 w-20" value={h} onChange={(e)=>setH(parseInt(e.target.value)||0)} />
+                  </div>
+                )}
+
+                {toolId === 'rotate-image' && (
+                  <div>
+                    <label className="text-sm">Angle</label>
+                    <input type="number" className="w-full border rounded px-2 py-1" value={angle} onChange={(e)=>setAngle(parseInt(e.target.value)||0)} />
+                  </div>
+                )}
+
+                {toolId === 'flip-image' && (
+                  <div>
+                    <label className="text-sm">Axis</label>
+                    <select className="w-full border rounded px-2 py-1" value={axis} onChange={(e)=>setAxis(e.target.value)}>
+                      <option value="h">horizontal</option>
+                      <option value="v">vertical</option>
+                    </select>
+                  </div>
+                )}
+
+                {(toolId === 'image-enlarger' || toolId === 'image-upscaler') && (
+                  <div>
+                    <label className="text-sm">Factor</label>
+                    <input type="number" className="w-full border rounded px-2 py-1" min={2} max={4} value={factor} onChange={(e)=>setFactor(parseInt(e.target.value)||2)} />
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
-          {toolId !== 'password-generator' && toolId !== 'uuid-generator' && (
-            <textarea
-              value={text}
-              onChange={(e)=>setText(e.target.value)}
-              className="w-full min-h-[160px] border rounded p-2"
-              placeholder="Enter text here"
-            />
-          )}
-        </>
-      ) : (
-        <>
-          {/* File inputs */}
-          <input type="file" accept={accept} multiple={multiple} onChange={onFileChange} />
+          {/* Result area */}
+          <div className="mt-4">
+            {resultText && (
+              <pre className="whitespace-pre-wrap text-sm bg-gray-50 border rounded p-3 overflow-auto max-h-80">{resultText}</pre>
+            )}
 
-          {/* Contextual controls */}
-          {toolId === 'pdf-splitter' && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Ranges</label>
-              <input className="border rounded px-2 py-1" placeholder="e.g., 1-3,5,7-8" value={ranges} onChange={(e)=>setRanges(e.target.value)} />
-            </div>
-          )}
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3 mt-3">{error}</div>
+            )}
+          </div>
 
-          {(toolId === 'video-trim' || toolId === 'trim-video') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Start (s)</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={start} onChange={(e)=>setStart(parseFloat(e.target.value)||0)} />
-              <label className="text-sm">Duration (s)</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={duration} onChange={(e)=>setDuration(parseFloat(e.target.value)||1)} />
-            </div>
-          )}
-
-          {(toolId === 'video-crop' || toolId === 'crop-video') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">W</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={w} onChange={(e)=>setW(parseInt(e.target.value)||0)} />
-              <label className="text-sm">H</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={h} onChange={(e)=>setH(parseInt(e.target.value)||0)} />
-              <label className="text-sm">X</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={x} onChange={(e)=>setX(parseInt(e.target.value)||0)} />
-              <label className="text-sm">Y</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={y} onChange={(e)=>setY(parseInt(e.target.value)||0)} />
-            </div>
-          )}
-
-          {(toolId === 'video-converter' || toolId === 'mp4-converter' || toolId === 'mov-to-mp4' || toolId === 'video-to-mp3' || toolId === 'mp4-to-mp3' || toolId === 'mp3-to-ogg') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Format</label>
-              <select className="border rounded px-2 py-1" value={format} onChange={(e)=>setFormat(e.target.value)}>
-                <option value="mp4">mp4</option>
-                <option value="mp3">mp3</option>
-                <option value="ogg">ogg</option>
-                <option value="webm">webm</option>
-                <option value="mkv">mkv</option>
-              </select>
-            </div>
-          )}
-
-          {toolId === 'image-compressor' && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Quality</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" min={1} max={100} value={quality} onChange={(e)=>setQuality(parseInt(e.target.value)||80)} />
-              <label className="text-sm">Format</label>
-              <select className="border rounded px-2 py-1" value={imgFormat} onChange={(e)=>setImgFormat(e.target.value)}>
-                <option value="jpeg">jpeg</option>
-                <option value="png">png</option>
-                <option value="webp">webp</option>
-              </select>
-            </div>
-          )}
-
-          {toolId === 'image-resizer' && (
-            <div className="flex items-center gap-3 flex-wrap">
-              <label className="text-sm">Width</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={widthPx} onChange={(e)=>setWidthPx(parseInt(e.target.value)||0)} />
-              <label className="text-sm">Height</label>
-              <input type="number" className="border rounded px-2 py-1 w-24" value={heightPx} onChange={(e)=>setHeightPx(parseInt(e.target.value)||0)} />
-              <label className="text-sm">Fit</label>
-              <select className="border rounded px-2 py-1" value={fit} onChange={(e)=>setFit(e.target.value)}>
-                <option value="cover">cover</option>
-                <option value="contain">contain</option>
-                <option value="fill">fill</option>
-                <option value="inside">inside</option>
-                <option value="outside">outside</option>
-              </select>
-            </div>
-          )}
-
-          {toolId === 'image-format-converter' && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Format</label>
-              <select className="border rounded px-2 py-1" value={imgFormat} onChange={(e)=>setImgFormat(e.target.value)}>
-                <option value="jpeg">jpeg</option>
-                <option value="png">png</option>
-                <option value="webp">webp</option>
-                <option value="gif">gif</option>
-              </select>
-            </div>
-          )}
-
-          {(toolId === 'crop-image') && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">W</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={w} onChange={(e)=>setW(parseInt(e.target.value)||0)} />
-              <label className="text-sm">H</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={h} onChange={(e)=>setH(parseInt(e.target.value)||0)} />
-              <label className="text-sm">X</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={x} onChange={(e)=>setX(parseInt(e.target.value)||0)} />
-              <label className="text-sm">Y</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={y} onChange={(e)=>setY(parseInt(e.target.value)||0)} />
-            </div>
-          )}
-
-          {toolId === 'rotate-image' && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Angle</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" value={angle} onChange={(e)=>setAngle(parseInt(e.target.value)||0)} />
-            </div>
-          )}
-
-          {toolId === 'flip-image' && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Axis</label>
-              <select className="border rounded px-2 py-1" value={axis} onChange={(e)=>setAxis(e.target.value)}>
-                <option value="h">horizontal</option>
-                <option value="v">vertical</option>
-              </select>
-            </div>
-          )}
-
-          {toolId === 'image-enlarger' || toolId === 'image-upscaler' ? (
-            <div className="flex items-center gap-3">
-              <label className="text-sm">Factor</label>
-              <input type="number" className="border rounded px-2 py-1 w-20" min={2} max={4} value={factor} onChange={(e)=>setFactor(parseInt(e.target.value)||2)} />
-            </div>
-          ) : null}
-        </>
-      )}
-
-      <div className="flex gap-2">
-        <button
-          onClick={run}
-          disabled={processing || (config?.mode !== 'text' && files.length === 0)}
-          className="px-4 py-2 bg-primary-600 text-white rounded disabled:opacity-50"
-        >
-          {processing ? "Processing..." : config?.buttonText || "Process"}
-        </button>
-        {downloadUrl && (
-          <a href={downloadUrl} download className="px-4 py-2 bg-green-600 text-white rounded">
-            Download
-          </a>
-        )}
+          {/* Feature warnings */}
+          <div className="mt-3 space-y-2">
+            {(toolId.startsWith('video') || toolId.includes('gif')) && features.ffmpeg===false && (
+              <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing ffmpeg — this tool may fail until ffmpeg is installed.</div>
+            )}
+            {(toolId==='pdf-to-jpg') && features.poppler===false && (
+              <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing Poppler — PDF to JPG requires pdftoppm.</div>
+            )}
+            {(toolId==='png-to-svg' || toolId==='svg-converter') && features.potrace===false && (
+              <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing potrace — SVG conversion requires potrace.</div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Feature warnings */}
-      {(toolId.startsWith('video') || toolId.includes('gif')) && features.ffmpeg===false && (
-        <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing ffmpeg — this tool may fail until ffmpeg is installed.</div>
-      )}
-      {(toolId==='pdf-to-jpg') && features.poppler===false && (
-        <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing Poppler — PDF to JPG requires pdftoppm.</div>
-      )}
-      {(toolId==='png-to-svg' || toolId==='svg-converter') && features.potrace===false && (
-        <div className="text-xs text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-2">Server missing potrace — SVG conversion requires potrace.</div>
-      )}
+      {/* Right: Actions & Download */}
+      <div className="lg:col-span-4">
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col justify-between h-full">
+          <div>
+            <h3 className="text-lg font-medium mb-3">Actions</h3>
+            <div className="space-y-3">
+              <button
+                onClick={run}
+                disabled={processing || (config?.mode !== 'text' && files.length === 0)}
+                className="w-full px-4 py-3 bg-primary-600 text-white rounded disabled:opacity-50"
+              >
+                {processing ? "Processing..." : config?.buttonText || "Process"}
+              </button>
 
-      {resultText && (
-        <pre className="whitespace-pre-wrap text-sm bg-gray-50 border rounded p-3 overflow-auto max-h-80">{resultText}</pre>
-      )}
+              {downloadUrl && (
+                <a href={downloadUrl} download className="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded">
+                  Download
+                </a>
+              )}
 
-      {error && (
-        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">{error}</div>
-      )}
-      {!apiBase && (
-        <div className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded p-3">
-          Set NEXT_PUBLIC_API_URL to enable backend tools.
+              {!apiBase && (
+                <div className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded p-3">Set NEXT_PUBLIC_API_URL to enable backend tools.</div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 text-sm text-gray-600">
+            <strong>Tips</strong>
+            <p className="mt-2">Upload the appropriate file type, adjust any options on the left, then click Process. Results will appear below or download automatically.</p>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -361,6 +438,8 @@ function buildJsonPayload(toolId: string, state: any) {
     case 'url-encoder-decoder':
       return { mode: state.modeValue || 'encode', data: state.text || '' };
     case 'qr-code-generator':
+      return { data: state.text || '', options: { width: 256, margin: 1 } };
+    case 'qr-generator':
       return { data: state.text || '', options: { width: 256, margin: 1 } };
     case 'password-generator':
       return { length: state.pwdLen || 16 };
@@ -398,24 +477,48 @@ function mapToolToEndpoint(toolId: string): ToolConfig | null {
     "webp-to-png": { path: "/files/convert-image", fileField: "image", params: { format: "png" }, accept: "image/webp" },
     "webp-to-jpg": { path: "/files/convert-image", fileField: "image", params: { format: "jpeg" }, accept: "image/webp" },
     "jfif-to-png": { path: "/files/convert-image", fileField: "image", params: { format: "png" }, accept: ".jfif,image/jpeg" },
-
-    // Background removal
-    "background-remover": { path: "/files/remove-background", fileField: "image", accept: "image/*" },
+    // Additional image tools
+    "crop-image": { path: "/image/crop", fileField: "image", accept: "image/*" },
+    "rotate-image": { path: "/image/rotate", fileField: "image", accept: "image/*" },
+    "flip-image": { path: "/image/flip", fileField: "image", accept: "image/*" },
+    "image-enlarger": { path: "/image/ai-upscale", fileField: "image", accept: "image/*" },
+    "image-upscaler": { path: "/image/ai-upscale", fileField: "image", accept: "image/*" },
+    "metadata-remover": { path: "/image/remove-metadata", fileField: "image", accept: "image/*" },
+    "image-watermark-remover": { path: "/image/watermark-remove", fileField: "image", accept: "image/*" },
+    "gif-to-apng": { path: "/image/gif-to-apng", fileField: "image", accept: "image/gif" },
+    "apng-to-gif": { path: "/image/apng-to-gif", fileField: "image", accept: "image/apng" },
+    "heic-to-jpg": { path: "/image/heic-convert", fileField: "image", params: { format: "jpeg" }, accept: "image/heic,image/heif" },
+    "heic-to-png": { path: "/image/heic-convert", fileField: "image", params: { format: "png" }, accept: "image/heic,image/heif" },
+    "heic-to-pdf": { path: "/image/heic-to-pdf", fileField: "image", accept: "image/heic,image/heif" },
 
     // Text/Utils -> backend-only
     "json-formatter": { path: "/utils/json", mode: 'text' },
     "base64-encoder-decoder": { path: "/utils/base64", mode: 'text' },
     "url-encoder-decoder": { path: "/utils/url", mode: 'text' },
     "qr-code-generator": { path: "/utils/qrcode", mode: 'text' },
+    "qr-generator": { path: "/utils/qrcode", mode: 'text' },
     "password-generator": { path: "/utils/password", mode: 'text' },
     "password-strength-checker": { path: "/utils/password-strength", mode: 'text' },
     "word-counter": { path: "/utils/word-counter", mode: 'text' },
     "uuid-generator": { path: "/utils/uuid", mode: 'text' },
     "csv-to-json-converter": { path: "/utils/csv-to-json", mode: 'text' },
+    "csv-to-json": { path: "/utils/csv-to-json", mode: 'text' },
+    "password-strength": { path: "/utils/password-strength", mode: 'text' },
 
     // PDFs (backend)
     "pdf-merger": { path: "/pdf/merge", fileField: "files[]", multiple: true, accept: "application/pdf" },
     "pdf-splitter": { path: "/pdf/split", fileField: "file", accept: "application/pdf" },
+    "pdf-compressor": { path: "/pdf/compress", fileField: "file", accept: "application/pdf" },
+    "pdf-to-jpg": { path: "/pdf/to-images", fileField: "file", params: { format: "jpeg" }, accept: "application/pdf" },
+    "flatten-pdf": { path: "/pdf/flatten", fileField: "file", accept: "application/pdf" },
+    "pdf-to-epub": { path: "/document/from-pdf", fileField: "file", params: { format: "epub" }, accept: "application/pdf" },
+    "resize-pdf": { path: "/pdf/resize", fileField: "file", accept: "application/pdf" },
+    "protect-pdf": { path: "/pdf/protect", fileField: "file", accept: "application/pdf" },
+    "unlock-pdf": { path: "/pdf/unlock", fileField: "file", accept: "application/pdf" },
+    "crop-pdf": { path: "/pdf/crop", fileField: "file", accept: "application/pdf" },
+    "rotate-pdf": { path: "/pdf/rotate", fileField: "file", accept: "application/pdf" },
+    "organize-pdf": { path: "/pdf/organize", fileField: "file", accept: "application/pdf" },
+    "extract-images-from-pdf": { path: "/pdf/extract-images", fileField: "file", accept: "application/pdf" },
 
     // Video/GIF (backend)
     "video-converter": { path: "/video/convert", fileField: "file", accept: "video/*" },
@@ -424,11 +527,36 @@ function mapToolToEndpoint(toolId: string): ToolConfig | null {
     "video-to-mp3": { path: "/video/convert", fileField: "file", params: { format: "mp3" }, accept: "video/*" },
     "mp4-to-mp3": { path: "/video/convert", fileField: "file", params: { format: "mp3" }, accept: "video/mp4" },
     "mp3-to-ogg": { path: "/video/convert", fileField: "file", params: { format: "ogg" }, accept: "audio/mpeg" },
+    "audio-converter": { path: "/video/convert", fileField: "file", accept: "audio/*" },
     "crop-video": { path: "/video/crop", fileField: "file", accept: "video/*" },
+    "video-crop": { path: "/video/crop", fileField: "file", accept: "video/*" },
     "trim-video": { path: "/video/trim", fileField: "file", accept: "video/*" },
-    "gif-maker": { path: "/gif/make", fileField: "files[]", multiple: true, accept: "image/*,video/*" },
-    "image-to-gif": { path: "/gif/make", fileField: "files[]", multiple: true, accept: "image/*" },
-  };
+    "video-trim": { path: "/video/trim", fileField: "file", accept: "video/*" },
+    "video-to-gif": { path: "/video/to-gif", fileField: "video", accept: "video/*" },
+    "gif-to-mp4": { path: "/video/convert", fileField: "file", params: { format: "mp4" }, accept: "image/gif" },
+    "video-to-audio-converter": { path: "/video/extract-audio", fileField: "file", accept: "video/*" },
+    "mp3-converter": { path: "/video/convert", fileField: "file", params: { format: "mp3" }, accept: "audio/*,video/*" },
+    "mp3-compressor": { path: "/video/audio/compress", fileField: "file", accept: "audio/mpeg" },
+    "wav-compressor": { path: "/video/audio/compress", fileField: "file", accept: "audio/wav" },
+    "gif-maker": { path: "/gif/make", fileField: "files[]", multiple: true, accept: "image/*" },
+    "gif-compressor": { path: "/gif/make", fileField: "files[]", multiple: true, accept: "image/*" },
+    "video-compressor": { path: "/video/compress", fileField: "video", accept: "video/*" },
+
+    // Convert / Archive / Icons / Docs
+    "png-to-svg": { path: "/convert/svg", fileField: "image", accept: "image/png,image/jpeg" },
+    "svg-converter": { path: "/convert/svg", fileField: "image", accept: "image/png,image/jpeg" },
+    "archive-converter": { path: "/convert/archive/convert", fileField: "archive", accept: ".zip,.7z,.rar,.tar,.gz,.tar.gz" },
+    "archive-extractor": { path: "/convert/archive/extract", fileField: "archive", accept: ".zip,.7z,.rar,.tar,.gz,.tar.gz" },
+    "archive-compressor": { path: "/convert/archive/compress", fileField: "files[]", multiple: true, accept: "*/*" },
+    "png-to-ico": { path: "/icon/to-ico", fileField: "image", accept: "image/png,image/jpeg" },
+    "ico-converter": { path: "/icon/to-ico", fileField: "image", accept: "image/png,image/jpeg" },
+    "favicon-generator": { path: "/icon/favicon", fileField: "image", accept: "image/png,image/jpeg" },
+    "docx-to-pdf": { path: "/document/to-pdf", fileField: "file", accept: ".doc,.docx,.odt,.rtf,.txt" },
+    "epub-to-pdf": { path: "/document/to-pdf", fileField: "file", accept: ".epub" },
+    "pdf-to-word": { path: "/document/from-pdf", fileField: "file", params: { format: "docx" }, accept: "application/pdf" },
+    "ebook-converter": { path: "/document/ebook-convert", fileField: "file", accept: ".epub,.mobi,.azw3,.fb2,.pdf,.txt" },
+    "jpg-to-pdf": { path: "/document/images-to-pdf", fileField: "files[]", multiple: true, accept: "image/jpeg,image/png" },
+};
   return m[toolId] || null;
 }
 
@@ -443,9 +571,7 @@ function buildFormParams(toolId: string, s: any): Record<string, string|number> 
     case 'video-crop':
       return { w: s.w || 0, h: s.h || 0, x: s.x || 0, y: s.y || 0 };
     case 'video-converter':
-    case 'mp4-converter':
     case 'mov-to-mp4':
-    case 'video-to-mp3':
     case 'mp4-to-mp3':
     case 'mp3-to-ogg':
       return { format: s.format || 'mp4' };
@@ -455,6 +581,25 @@ function buildFormParams(toolId: string, s: any): Record<string, string|number> 
       return { width: s.widthPx || 0, height: s.heightPx || 0, fit: s.fit || 'cover' } as any;
     case 'image-format-converter':
       return { format: s.imgFormat || 'png' };
+    case 'png-to-svg':
+    case 'svg-converter':
+      return {};
+    case 'video-to-audio-converter':
+      return { format: s.format || 'mp3' };
+    case 'video-to-gif':
+      return { fps: 10, width: 480 } as any;
+    case 'rotate-pdf':
+      return { angle: s.angle || 90, pages: s.ranges || '' } as any;
+    case 'crop-pdf':
+      return { left: s.x || 0, top: s.y || 0, right: s.w || 0, bottom: s.h || 0 } as any;
+    case 'organize-pdf':
+      return { order: s.ranges || '' } as any;
+    case 'protect-pdf':
+      return { password: s.text || '' } as any;
+    case 'unlock-pdf':
+      return { password: s.text || '' } as any;
+    case 'archive-converter':
+      return { target: s.format || 'zip' } as any;
     case 'crop-image':
       return { w: s.w || 0, h: s.h || 0, x: s.x || 0, y: s.y || 0 };
     case 'rotate-image':
@@ -463,7 +608,27 @@ function buildFormParams(toolId: string, s: any): Record<string, string|number> 
       return { axis: s.axis || 'h' };
     case 'image-enlarger':
     case 'image-upscaler':
+    case 'ai-upscaler':
       return { factor: s.factor || 2 };
+    case 'text-case-converter':
+      return { mode: s.caseMode || 'lower' };
+    case 'hash-calculator':
+      return { algorithm: s.hashAlgo || 'sha256' };
+    case 'pdf-splitter':
+      return { ranges: s.ranges || '' };
+    case 'video-trimmer':
+      return { start: s.start || 0, duration: s.duration || 5 };
+    case 'video-cropper':
+      return { w: s.w || 480, h: s.h || 360, x: s.x || 0, y: s.y || 0 };
+    case 'video-converter':
+    case 'audio-converter':
+      return { format: s.format || 'mp4' };
+    case 'pdf-organizer':
+      return { pages: s.pages || [] };
+    case 'password-generator':
+      return { length: s.pwdLen || 16, numbers: true, symbols: true };
+    case 'qr-generator':
+      return { data: s.text || '', size: s.widthPx || 256 };
     default:
       return {};
   }

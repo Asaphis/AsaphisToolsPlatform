@@ -42,7 +42,27 @@ def remove_bg(input_image, output_image, model_path):
     print(f"Saved: {output_image}")
 
 if __name__ == "__main__":
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
-    model_path = os.path.join(os.path.dirname(__file__), "u2net.pth")
-    remove_bg(input_path, output_path, model_path)
+    try:
+        input_path = sys.argv[1]
+        output_path = sys.argv[2]
+        model_path = os.path.join(os.path.dirname(__file__), "u2net.pth")
+        
+        print(f"Input: {input_path}")
+        print(f"Output: {output_path}")
+        print(f"Model: {model_path}")
+        
+        if not os.path.exists(input_path):
+            print(f"Error: Input file does not exist: {input_path}", file=sys.stderr)
+            sys.exit(1)
+        
+        if not os.path.exists(model_path):
+            print(f"Error: Model file does not exist: {model_path}", file=sys.stderr)
+            sys.exit(1)
+        
+        remove_bg(input_path, output_path, model_path)
+        print("Background removal completed successfully")
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)

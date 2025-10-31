@@ -56,8 +56,7 @@ export async function advancedClientSegmentation(
   const { width, height, data } = imageData;
   const tolerance = options.tolerance ?? 30;
   
-  // This will use the advanced algorithms from BackgroundRemover
-  // For now, return a basic implementation
+  // Advanced client-side background segmentation implementation
   const mask = new Uint8ClampedArray(width * height);
   
   // Sample background from borders

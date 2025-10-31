@@ -1,0 +1,9 @@
+{
+  "categories": [
+    { "id": "image", "name": "Image" },
+    { "id": "pdf", "name": "PDF" },
+    { "id": "text", "name": "Text" },
+    { "id": "video", "name": "Video" },
+    { "id": "other", "name": "Other" }
+  ]
+}

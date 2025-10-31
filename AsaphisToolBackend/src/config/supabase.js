@@ -21,7 +21,11 @@ if (hasSupabaseConfig) {
     {
       auth: {
         autoRefreshToken: true,
-        persistSession: false
+        persistSession: false,
+        debug: true
+      },
+      db: {
+        schema: 'public'
       }
     }
   );

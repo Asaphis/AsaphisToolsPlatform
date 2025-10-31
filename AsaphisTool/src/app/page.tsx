@@ -15,12 +15,16 @@ export default async function HomePage() {
   const tools = await fetchTools();
   const featuredTools = tools.filter(t => t.featured);
   const popularTools = tools.filter(t => t.popular).slice(0, 8);
-  const categories = Array.from(new Set(tools.map(t => t.category))).map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1), count: tools.filter(t => t.category === id).length }));
+  const categories = Array.from(new Set(tools.map(t => t.category))).map(id => ({ 
+    id, 
+    name: id.charAt(0).toUpperCase() + id.slice(1), 
+    count: tools.filter(t => t.category === id).length 
+  }));
 
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-white/95 dark:bg-gray-900 py-16 sm:py-24 border-b border-gray-100 dark:border-gray-800">
+      <section className="relative bg-card py-16 sm:py-24 border-b border-border">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
@@ -28,13 +32,13 @@ export default async function HomePage() {
                 🛠️
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
               Free Online Tools for
               <span className="block bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
                 Everything You Need
               </span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-foreground/70 leading-relaxed">
               Boost your productivity with our collection of free, fast, and secure online tools. 
               Compress images, edit PDFs, generate QR codes, and much more — all in your browser, 
               no downloads required.
@@ -43,7 +47,7 @@ export default async function HomePage() {
             {/* CTA Search */}
             <div className="mt-10 max-w-2xl mx-auto">
               <SearchBar />
-              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-3 text-sm text-foreground/70">
                 🔥 Popular searches: image compressor, PDF merger, QR generator, password generator
               </p>
             </div>
@@ -51,26 +55,26 @@ export default async function HomePage() {
             {/* Stats */}
             <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-primary-600">
                   {tools.length}+
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-sm text-foreground/70 mt-1">
                   Free Tools
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-primary-600">
                   100%
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-sm text-foreground/70 mt-1">
                   Secure
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-3xl font-bold text-primary-600">
                   0
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-sm text-foreground/70 mt-1">
                   Registration
                 </div>
               </div>
@@ -96,7 +100,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {featuredTools.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} featured />
+              <ToolCard key={tool.id} tool={tool} />
             ))}
           </div>
         </section>

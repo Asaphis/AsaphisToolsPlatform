@@ -14,7 +14,6 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const pathname = usePathname();
-
   useEffect(() => {
     let cancelled = false;
     const load = async () => {

@@ -1,12 +1,19 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 import { ApiError } from './errorHandler.js';
+import cookie from 'cookie';
 
 // Verify JWT token
 export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    let token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    // If no Authorization header, try cookie
+    if (!token && req.headers.cookie) {
+      const parsed = cookie.parse(req.headers.cookie || '');
+      token = parsed['admin_token'] || parsed['token'];
+    }
 
     if (!token) {
       throw new ApiError(401, 'Access token required');
@@ -30,7 +37,13 @@ export const authenticateToken = async (req, res, next) => {
 export const authenticateAdmin = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    let token = authHeader && authHeader.split(' ')[1];
+
+    // Check cookie fallback
+    if (!token && req.headers.cookie) {
+      const parsed = cookie.parse(req.headers.cookie || '');
+      token = parsed['admin_token'];
+    }
 
     if (!token) {
       throw new ApiError(401, 'Admin token required');

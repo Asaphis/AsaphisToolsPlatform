@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,178 +17,191 @@ export function Footer() {
       try {
         const base = process.env.NEXT_PUBLIC_API_URL || '';
         const url = base.startsWith('http') ? `${base}/categories` : '/api/categories';
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) return;
+        const res = await fetch(url, { 
+          cache: 'no-store',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        if (!res.ok) {
+          console.error('Failed to fetch categories:', res.status);
+          return;
+        }
         const json = await res.json();
-        const list = (json.categories || []).map((c: any) => ({ id: c.slug || c.id, name: c.name }));
+        const list = (json.categories || []).map((c: any) => ({ 
+          id: c.slug || c.id, 
+          name: c.name 
+        }));
         if (!cancelled) setCategories(list);
-      } catch {}
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
     };
     load();
     return () => { cancelled = true; };
   }, []);
 
-  const popularTools = [
-    { name: 'Image Compressor', href: '/tools/image-compressor' },
-    { name: 'PDF Merger', href: '/tools/pdf-merger' },
-    { name: 'QR Code Generator', href: '/tools/qr-code-generator' },
-    { name: 'Password Generator', href: '/tools/password-generator' },
-    { name: 'JSON Formatter', href: '/tools/json-formatter' },
-  ];
+    const popularTools = [
+      { name: 'Image Compressor', href: '/tools/image-compressor' },
+      { name: 'PDF Merger', href: '/tools/pdf-merger' },
+      { name: 'QR Code Generator', href: '/tools/qr-code-generator' },
+      { name: 'Password Generator', href: '/tools/password-generator' },
+      { name: 'JSON Formatter', href: '/tools/json-formatter' },
+    ];
 
-  const footerLinks = {
-    Company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Contact', href: '/contact' },
-      { name: 'Help Center', href: '/help' },
-    ],
-    Legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-    ],
-    Categories: categories.slice(0, 6).map(cat => ({
-      name: cat.name,
-      href: `/category/${cat.id}`
-    })),
-  };
+    const footerLinks = {
+      Company: [
+        { name: 'About Us', href: '/about' },
+        { name: 'Contact', href: '/contact' },
+        { name: 'Help Center', href: '/help' },
+      ],
+      Legal: [
+        { name: 'Privacy Policy', href: '/privacy' },
+        { name: 'Terms of Service', href: '/terms' },
+      ],
+      Categories: categories.slice(0, 6).map(cat => ({
+        name: cat.name,
+        href: `/category/${cat.id}`
+      })),
+    } as const;
 
-  const socialLinks = [
-    { name: 'Twitter', href: '#', icon: Twitter },
-    { name: 'GitHub', href: '#', icon: Github },
-    { name: 'LinkedIn', href: '#', icon: Linkedin },
-    { name: 'Email', href: '/contact', icon: Mail },
-  ];
+    const socialLinks = [
+      { name: 'Twitter', href: 'https://twitter.com/asaphistool', icon: Twitter },
+      { name: 'GitHub', href: 'https://github.com/Asaphis', icon: Github },
+      { name: 'LinkedIn', href: 'https://linkedin.com/company/asaphistool', icon: Linkedin },
+      { name: 'Email', href: '/contact', icon: Mail },
+    ];
 
-  return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Main footer content */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
-          {/* Brand section */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <Image 
-                src="/AsaphistoolLogo.png" 
-                alt="AsaPhisTool Logo" 
-                width={32} 
-                height={32}
-                className="h-8 w-8 object-contain"
-              />
-              <span className="font-bold text-xl text-gray-900 dark:text-white">
-                AsaPhisTool
-              </span>
+
+    return (
+      <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Main footer content */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
+            {/* Brand section */}
+            <div className="col-span-2 md:col-span-4 lg:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <Image
+                  src="/AsaphistoolLogo.png"
+                  alt="AsaPhisTool Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
+                <span className="font-bold text-xl text-gray-900 dark:text-white">
+                  AsaPhisTool
+                </span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
+                Free online tools for everyone. Compress images, merge PDFs, generate QR codes, and more - all in your browser.
+              </p>
+              {/* Social Links */}
+              <div className="flex space-x-4">
+                {socialLinks.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                      aria-label={item.name}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
-              Free online tools for everyone. Compress images, merge PDFs, generate QR codes, and more - all in your browser.
-            </p>
-            
-            {/* Social Links */}
-            <div className="flex space-x-4">
-              {socialLinks.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                    aria-label={item.name}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </Link>
-                );
-              })}
+
+            {/* Popular Tools */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+                Popular Tools
+              </h3>
+              <ul className="space-y-3">
+                {popularTools.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Categories */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+                Categories
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.Categories.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+                Company
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.Company.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
+                Legal
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.Legal.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Popular Tools */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Popular Tools
-            </h3>
-            <ul className="space-y-3">
-              {popularTools.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Categories
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.Categories.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Company
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.Company.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Legal
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.Legal.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Bottom section */}
+          <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                &copy; {currentYear} AsaPhis. All rights reserved.
+              </p>
+              <p className="mt-4 md:mt-0 text-sm text-gray-500 dark:text-gray-400">
+                Made with ❤️ for productivity • 100% Browser-Based • Privacy First
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Bottom section */}
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              &copy; {currentYear} AsaPhis. All rights reserved.
-            </p>
-            <p className="mt-4 md:mt-0 text-sm text-gray-500 dark:text-gray-400">
-              Made with ❤️ for productivity • 100% Browser-Based • Privacy First
-            </p>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
+      </footer>
+    );
+  }
