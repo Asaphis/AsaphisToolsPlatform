@@ -8,7 +8,9 @@ export type ToolCategory =
   | 'converter' 
   | 'generator'
   | 'ai'
-  | 'security';
+  | 'security'
+  | 'audio'
+  | 'tools';
 
 // Tool interface
 export interface Tool {
