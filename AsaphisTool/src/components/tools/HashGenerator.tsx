@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Settings2, PenTool, Hash, CircleEqual } from 'lucide-react';
 
 type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 

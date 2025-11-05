@@ -8,7 +8,7 @@ export function RegexTester() {
   const [input, setInput] = useState<string>("Hello world! 123 abc DEF");
   const [error, setError] = useState<string>("");
 
-  let matches: RegExpExecArray[] = [];
+  const matches: RegExpExecArray[] = [];
   try {
     const re = new RegExp(pattern, flags);
     setError("");

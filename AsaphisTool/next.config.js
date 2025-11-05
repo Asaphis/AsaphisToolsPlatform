@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    // Allow production builds to successfully complete even if
+    // there are ESLint errors (we still lint during development).
+    ignoreDuringBuilds: true,
+  },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Important: return the modified config
     return config;

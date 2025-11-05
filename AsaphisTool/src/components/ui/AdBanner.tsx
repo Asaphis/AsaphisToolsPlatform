@@ -44,12 +44,6 @@ export function AdBanner({ slot, className = '' }: AdBannerProps) {
     },
   } as const;
 
-  // Ensure slot is a valid value
-  if (!Object.keys(adConfig).includes(slot)) {
-    console.error(`Invalid ad slot: ${slot}. Must be one of: ${Object.keys(adConfig).join(', ')}`);
-    return null;
-  }
-
   const config = adConfig[slot];
   const isDevelopment = process.env.NODE_ENV === 'development';
 

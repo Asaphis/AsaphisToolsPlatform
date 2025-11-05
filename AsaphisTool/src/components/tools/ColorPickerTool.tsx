@@ -17,7 +17,8 @@ export function ColorPickerTool() {
       setRgb(`${r},${g},${b}`);
       const rr=r/255, gg=g/255, bb=b/255;
       const max=Math.max(rr,gg,bb), min=Math.min(rr,gg,bb);
-      let h=0,s=0,l=(max+min)/2;
+      let h=0, s=0;
+      const l=(max+min)/2;
       if (max!==min){
         const d=max-min;
         s=l>0.5? d/(2-max-min): d/(max+min);
