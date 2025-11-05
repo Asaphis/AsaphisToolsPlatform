@@ -31,9 +31,11 @@ export function ImageCompressor() {
   // Analytics tracking
   const onUse = useCallback(() => {
     if (images.length > 0) {
+      const sizeSavedBytes = images.reduce((acc, img) => acc + (img.originalSize - img.compressedSize), 0);
       recordToolUsage('image-compressor', {
-        imageCount: images.length,
-        totalSavings: images.reduce((acc, img) => acc + img.savings, 0),
+        action: 'Viewed results',
+        fileCount: images.length,
+        sizeSavedBytes,
       });
     }
   }, [images]);
