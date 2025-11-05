@@ -560,7 +560,7 @@ function mapToolToEndpoint(toolId: string): ToolConfig | null {
   return m[toolId] || null;
 }
 
-function buildFormParams(toolId: string, s: any): Record<string, string|number> {
+function buildFormParams(toolId: string, s: any): Record<string, string | number | boolean | string[] | number[]> {
   switch (toolId) {
     case 'pdf-splitter':
       return { ranges: s.ranges || '' };
