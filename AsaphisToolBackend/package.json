@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "build": "echo \"No build step for backend\"",
     "migrate:apply": "node scripts/apply_schema.js",
     "test": "node test.js",
     "check-deps": "check-dependencies.bat",
