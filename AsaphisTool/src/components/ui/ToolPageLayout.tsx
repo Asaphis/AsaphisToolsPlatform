@@ -1,7 +1,6 @@
 import React from 'react';
 import { Tool } from '@/types';
 import { FileUpload } from './FileUpload';
-import { Button } from './Button';
 import { Settings } from 'lucide-react';
 
 interface ToolPageLayoutProps {
