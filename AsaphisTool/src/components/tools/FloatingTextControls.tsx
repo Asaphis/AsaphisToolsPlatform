@@ -129,7 +129,7 @@ export function FloatingTextControls({
     }
   };
 
-  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     } else if (e.key === 'ArrowUp') {
