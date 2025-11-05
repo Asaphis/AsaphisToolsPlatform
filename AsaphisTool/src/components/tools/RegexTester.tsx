@@ -1,29 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export function RegexTester() {
   const [pattern, setPattern] = useState<string>("\\b[a-zA-Z]+\\b");
   const [flags, setFlags] = useState<string>("g");
   const [input, setInput] = useState<string>("Hello world! 123 abc DEF");
-  const [error, setError] = useState<string>("");
 
-  const matches: RegExpExecArray[] = [];
-  try {
-    const re = new RegExp(pattern, flags);
-    setError("");
-    if (input.length) {
-      if (flags.includes("g")) {
-        let m: RegExpExecArray | null;
-        while ((m = re.exec(input)) !== null) matches.push(m);
-      } else {
-        const m = re.exec(input);
-        if (m) matches.push(m);
+  const { matches, errorMessage } = useMemo(() => {
+    const found: RegExpExecArray[] = [];
+    try {
+      const re = new RegExp(pattern, flags);
+      if (input.length) {
+        if (flags.includes("g")) {
+          let m: RegExpExecArray | null;
+          while ((m = re.exec(input)) !== null) found.push(m);
+        } else {
+          const m = re.exec(input);
+          if (m) found.push(m);
+        }
       }
+      return { matches: found, errorMessage: "" };
+    } catch (e: any) {
+      return { matches: [], errorMessage: e?.message || "Invalid regex" };
     }
-  } catch (e: any) {
-    if (!error) setError(e?.message || "Invalid regex");
-  }
+  }, [pattern, flags, input]);
 
   return (
     <div className="space-y-6">
@@ -47,7 +48,7 @@ export function RegexTester() {
           <label className="block text-sm font-medium mb-1">Test Input</label>
           <textarea value={input} onChange={(e)=>setInput(e.target.value)} className="w-full h-40 px-3 py-2 border rounded-lg dark:bg-gray-700" />
         </div>
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {errorMessage && <div className="text-sm text-red-600">{errorMessage}</div>}
         <div>
           <h3 className="text-sm font-semibold mb-2">Matches ({matches.length})</h3>
           <div className="space-y-2 text-sm">
