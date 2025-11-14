@@ -5,8 +5,9 @@ import { ToolPageLayout } from '@/components/ui/ToolPageLayout';
 import { ImagePreview } from '@/components/ui/ImagePreview';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Select } from '@/components/ui/select';
-import { tools } from '@/data/tools';
 import { Slider } from '@/components/ui/slider';
+import { tools } from '@/data/tools';
+import { getApiBase } from '@/lib/api';
 
 const acceptedFiles = {
   'image/*': ['.jpg', '.jpeg', '.png', '.webp']
@@ -41,7 +42,8 @@ export default function ImageCompressor() {
       formData.append('format', format);
       formData.append('quality', quality.toString());
 
-      const response = await fetch('/api/v1/image/compress', {
+      const apiBase = getApiBase();
+      const response = await fetch(`${apiBase}/image/compress`, {
         method: 'POST',
         body: formData
       });

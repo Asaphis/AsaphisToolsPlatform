@@ -58,11 +58,11 @@ function DefaultToolInterface({ tool }: { tool: Tool }) {
         <div className="bg-gradient-to-br from-sky-50 to-violet-50 dark:from-sky-900/10 dark:to-violet-900/10 border border-border rounded-xl p-6 mb-8">
           <div className="flex items-center justify-center mb-4">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-violet-500 flex items-center justify-center text-white shadow">
-              <span className="text-xl">🚧</span>
+              <span className="text-xl">ℹ️</span>
             </div>
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">Coming Soon</h3>
-          <p className="text-foreground/80">We&apos;re building a fantastic {tool.name.toLowerCase()} experience. Subscribe below to get notified when it launches.</p>
+          <h3 className="text-xl font-semibold text-foreground mb-2">Tool temporarily unavailable</h3>
+          <p className="text-foreground/80">This tool is not available right now. Please try again later or use one of the other tools on AsaPhisTool.</p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

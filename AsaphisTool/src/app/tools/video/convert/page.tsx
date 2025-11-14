@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { ToolPageLayout } from '@/components/ui/ToolPageLayout';
-import { tools } from '@/data/tools';
 import { Select } from '@/components/ui/select';
+import { tools } from '@/data/tools';
+import { getApiBase } from '@/lib/api';
 
 const acceptedFiles = {
   'video/*': ['.mp4', '.mov', '.avi', '.webm', '.mkv']
@@ -36,7 +37,8 @@ export default function VideoConverter() {
       formData.append('format', format);
       formData.append('quality', quality);
 
-      const response = await fetch('/api/v1/video/convert', {
+      const apiBase = getApiBase();
+      const response = await fetch(`${apiBase}/video/convert`, {
         method: 'POST',
         body: formData
       });

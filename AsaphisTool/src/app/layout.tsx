@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://asaphistool.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://asaphistools.onrender.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://asaphistool.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://asaphistools.onrender.com',
     title: 'AsaPhisTool - Free Online Tools & Utilities',
     description: 'Free online tools and utilities for image compression, PDF editing, text processing, and more. Fast, secure, and no registration required.',
     siteName: 'AsaPhisTool',

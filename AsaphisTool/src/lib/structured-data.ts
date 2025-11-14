@@ -1,12 +1,13 @@
 import { Tool } from '@/types';
 
 export const generateWebsiteStructuredData = () => {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://asaphistools.onrender.com';
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'AsaPhisTool',
     description: 'Free online tools and utilities for productivity and creativity. Compress images, edit PDFs, generate QR codes, and much more.',
-    url: 'https://asaphistool.com',
+    url: base,
     sameAs: [
       'https://twitter.com/asaphistool',
       'https://github.com/asaphistool',
@@ -16,7 +17,7 @@ export const generateWebsiteStructuredData = () => {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://asaphistool.com/search?q={search_term_string}'
+        urlTemplate: `${base}/search?q={search_term_string}`
       },
       'query-input': 'required name=search_term_string'
     }
@@ -24,13 +25,14 @@ export const generateWebsiteStructuredData = () => {
 };
 
 export const generateOrganizationStructuredData = () => {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://asaphistools.onrender.com';
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'AsaPhis',
     description: 'Technology company providing free online tools and utilities',
-    url: 'https://asaphistool.com',
-    logo: 'https://asaphistool.com/logo.png',
+    url: base,
+    logo: `${base}/logo.png`,
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
@@ -45,12 +47,13 @@ export const generateOrganizationStructuredData = () => {
 };
 
 export const generateToolStructuredData = (tool: Tool) => {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://asaphistools.onrender.com';
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: tool.name,
     description: tool.description,
-    url: `https://asaphistool.com/tools/${tool.slug}`,
+    url: `${base}/tools/${tool.slug}`,
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Web Browser',
     offers: {
@@ -59,7 +62,7 @@ export const generateToolStructuredData = (tool: Tool) => {
       priceCurrency: 'USD'
     },
     featureList: tool.tags,
-    screenshot: `https://asaphistool.com/screenshots/${tool.slug}.png`,
+    screenshot: `${base}/screenshots/${tool.slug}.png`,
     author: {
       '@type': 'Organization',
       name: 'AsaPhis'

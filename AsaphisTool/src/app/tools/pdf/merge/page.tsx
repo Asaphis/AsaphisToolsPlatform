@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { ToolPageLayout } from '@/components/ui/ToolPageLayout';
 import { FilesPreview } from '@/components/ui/FilesPreview';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { tools } from '@/data/tools';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { tools } from '@/data/tools';
+import { getApiBase } from '@/lib/api';
 
 const acceptedFiles = {
   'application/pdf': ['.pdf']
@@ -54,7 +55,8 @@ export default function PDFMerger() {
         formData.append('files[]', file);
       });
 
-      const response = await fetch('/api/v1/pdf/merge', {
+      const apiBase = getApiBase();
+      const response = await fetch(`${apiBase}/pdf/merge`, {
         method: 'POST',
         body: formData
       });

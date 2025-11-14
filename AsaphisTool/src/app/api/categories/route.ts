@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
-import { implementedTools } from '@/data/tools';
+import { fetchCategoriesServer } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const categories = Array.from(new Set(implementedTools.map(t => t.category))).map(id => ({
-    id,
-    name: id.charAt(0).toUpperCase() + id.slice(1),
-  }));
-  return NextResponse.json({ categories }, { headers: { 'Cache-Control': 'no-store' } });
+  try {
+    const categories = await fetchCategoriesServer();
+    return NextResponse.json({ categories }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch {
+    return NextResponse.json({ categories: [] }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
+  }
 }

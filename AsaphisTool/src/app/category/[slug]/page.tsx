@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Tool } from '@/types';
 import { ToolCard } from '@/components/ui/ToolCard';
 import AdSlot from '@/components/ads/AdSlot';
-import { implementedTools } from '@/data/tools';
 
 interface CategoryPageProps {
   params: { slug: string };
@@ -12,17 +11,25 @@ interface CategoryPageProps {
 
 // Generate static params for all categories
 export async function generateStaticParams() {
-  const categories = Array.from(new Set(implementedTools.map(t => t.category)));
-  return categories.map((slug) => ({ slug }));
+  const categories = await fetchCategoriesServer();
+  return categories.map((cat) => ({ slug: cat.id }));
 }
 
 // Generate metadata for SEO
-import { fetchToolsServer } from '@/lib/api';
+import { fetchToolsServer, fetchCategoriesServer } from '@/lib/api';
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const tools = await fetchToolsServer();
+  const [tools, categories] = await Promise.all([
+    fetchToolsServer(),
+    fetchCategoriesServer(),
+  ]);
   const count = tools.filter(t => t.category === params.slug).length;
-  const category = { id: params.slug, name: params.slug.charAt(0).toUpperCase() + params.slug.slice(1), count };
+  const categoryMeta = categories.find(c => c.id === params.slug);
+  const category = {
+    id: params.slug,
+    name: categoryMeta?.name || params.slug.charAt(0).toUpperCase() + params.slug.slice(1),
+    count,
+  };
   
   if (!count) {
     return {
@@ -104,8 +111,15 @@ const categoryDescriptions = {
 };
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const tools = implementedTools;
-  const categories = Array.from(new Set(tools.map(t => t.category))).map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1), count: tools.filter(t => t.category === id).length }));
+  const [tools, categoriesData] = await Promise.all([
+    fetchToolsServer(),
+    fetchCategoriesServer(),
+  ]);
+  const categories = categoriesData.map((c) => ({
+    id: c.id,
+    name: c.name,
+    count: tools.filter(t => t.category === c.id).length,
+  }));
   const category = categories.find(cat => cat.id === params.slug);
   const categoryTools = tools.filter(t => t.category === params.slug);
 

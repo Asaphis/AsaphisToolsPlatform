@@ -1,14 +1,14 @@
 import { MetadataRoute } from 'next';
-import { implementedTools } from '@/data/tools';
+import { getApiBase } from '@/lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://asaphistool.com';
-  const base = process.env.NEXT_PUBLIC_API_URL || '';
+  const baseUrl = 'https://asaphistools.onrender.com';
+  const base = getApiBase();
 
   let tools: Array<{ slug: string; featured?: boolean; popular?: boolean }> = [];
   let categories: Array<{ id: string }> = [];
   try {
-    if (base.startsWith('http')) {
+    if (base && base.startsWith('http')) {
       const [toolsRes, catsRes] = await Promise.all([
         fetch(`${base}/tools`, { cache: 'no-store' }),
         fetch(`${base}/categories`, { cache: 'no-store' }),
@@ -24,13 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {}
 
-  // Fallback to implemented local tools when backend is not available
+  // If backend is unreachable, return a minimal sitemap rather than mixing in static mock tools.
   if (tools.length === 0) {
-    tools = implementedTools.map(t => ({ slug: t.slug, featured: t.featured, popular: t.popular }));
+    tools = [];
   }
   if (categories.length === 0) {
-    const cats = Array.from(new Set(implementedTools.map(t => t.category)));
-    categories = cats.map(id => ({ id }));
+    categories = [];
   }
 
   // Static pages

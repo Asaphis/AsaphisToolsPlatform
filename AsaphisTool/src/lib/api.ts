@@ -1,11 +1,28 @@
 import { Tool } from '@/types';
 import { implementedTools } from '@/data/tools';
 
+export function getSiteBaseUrl() {
+  // Prefer explicit env var so you can move from Render URL to a custom domain easily.
+  if (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.length) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
+  }
+  // Fallback to current live Render URL.
+  return 'https://asaphistools.onrender.com';
+}
+
 export function getApiBase() {
-  // Prefer explicit env var. In development, fall back to the local backend used by AsaphisToolBackend.
-  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.length) return process.env.NEXT_PUBLIC_API_URL;
-  if (process.env.NODE_ENV === 'development') return 'http://localhost:4000/api/v1';
-  return '';
+  // Prefer explicit env var.
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.length) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  // Local development: talk to the local backend.
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:4000/api/v1';
+  }
+
+  // Production fallback: use the deployed Render backend.
+  return 'https://asaphistoolsbackend.onrender.com/api/v1';
 }
 
 export async function fetchToolsServer(): Promise<Tool[]> {
@@ -16,25 +33,19 @@ export async function fetchToolsServer(): Promise<Tool[]> {
       if (res.ok) {
         const json = await res.json();
         const serverTools = (json.tools as Tool[]) || [];
-
-        // Merge server-provided tools with local `implementedTools` so the UI
-        // always shows the full set of tools available in the codebase.
-        // Prefer server metadata when present, but include any local tools
-        // (e.g. admin-only or not-yet-registered endpoints) that the server
-        // doesn't return.
-        const map = new Map<string, Tool>();
-        // first add server tools (take precedence)
-        serverTools.forEach(t => map.set(t.slug, t));
-        // then add local tools if missing
-        implementedTools.forEach(t => {
-          if (!map.has(t.slug)) map.set(t.slug, t);
-        });
-        return Array.from(map.values());
+        return serverTools;
       }
     } catch {
-      // fall back below
+      // fall through to fallback logic below
     }
   }
+
+  // In production, avoid showing tools that the backend doesn't know about.
+  if (process.env.NODE_ENV === 'production') {
+    return [];
+  }
+
+  // In development, fall back to the locally defined tool list for convenience.
   return implementedTools;
 }
 
@@ -48,8 +59,15 @@ export async function fetchCategoriesServer(): Promise<{ id: string; name: strin
         const cats = (json.categories || []).map((c: any) => ({ id: c.slug || c.id, name: c.name }));
         if (cats.length) return cats;
       }
-    } catch {}
+    } catch {
+      // fall through to fallback logic below
+    }
   }
+
+  if (process.env.NODE_ENV === 'production') {
+    return [];
+  }
+
   const cats = Array.from(new Set(implementedTools.map(t => t.category)));
   return cats.map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }));
 }

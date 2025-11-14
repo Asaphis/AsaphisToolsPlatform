@@ -3,14 +3,15 @@ import { notFound } from 'next/navigation';
 import { ToolPageContent } from '@/components/tools/ToolPageContent';
 import AdSlot from '@/components/ads/AdSlot';
 import { ShareButtons } from '@/components/ui/ShareButtons';
-import { implementedTools } from '@/data/tools';
+import { getSiteBaseUrl } from '@/lib/api';
 
 interface ToolPageProps {
   params: { slug: string };
 }
 
 export async function generateStaticParams() {
-  return implementedTools.map((tool) => ({ slug: tool.slug }));
+  const tools = await fetchToolsServer();
+  return tools.map((tool) => ({ slug: tool.slug }));
 }
 
 // Generate metadata for SEO
@@ -83,7 +84,11 @@ export default async function ToolPage({ params }: ToolPageProps) {
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">{tool.name}</h1>
             <p className="mt-4 text-lg sm:text-xl text-foreground/70 max-w-3xl mx-auto">{tool.description}</p>
             <div className="mt-6 flex items-center justify-center">
-              <ShareButtons url={`https://asaphistool.com/tools/${tool.slug}`} title={`${tool.name} - Free Online Tool`} description={tool.description} />
+              <ShareButtons
+                url={`${getSiteBaseUrl()}/tools/${tool.slug}`}
+                title={`${tool.name} - Free Online Tool`}
+                description={tool.description}
+              />
             </div>
             <div className="mt-5 flex items-center justify-center gap-3">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-muted text-foreground capitalize">{tool.category}</span>
