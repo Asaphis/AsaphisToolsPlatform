@@ -4,6 +4,10 @@ import { upload, cleanupFile } from '../middleware/upload.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { optionalAuth } from '../middleware/auth.js';
 
+// Feature flag so background removal can be disabled in environments
+// where Python/torch are not installed (e.g. some cloud deployments).
+const BG_REMOVAL_ENABLED = process.env.ENABLE_BG_REMOVAL === 'true';
+
 const router = express.Router();
 
 // POST /api/v1/files/compress-image - Compress image
@@ -117,6 +121,13 @@ router.post('/remove-background', optionalAuth, upload.single('image'), async (r
   try {
     if (!req.file) {
       throw new ApiError(400, 'No image file provided');
+    }
+
+    // Gracefully disable background removal when Python/torch are not
+    // available in the current environment.
+    if (!BG_REMOVAL_ENABLED) {
+      cleanupFile(req.file.path);
+      throw new ApiError(503, 'Background removal is not enabled on this server.');
     }
 
     const { exec } = await import('child_process');
