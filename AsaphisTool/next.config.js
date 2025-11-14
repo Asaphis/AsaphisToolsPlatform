@@ -5,6 +5,10 @@ const nextConfig = {
     // there are ESLint errors (we still lint during development).
     ignoreDuringBuilds: true,
   },
+  // Increase static page generation timeout to better tolerate slow backend responses
+  // during build, while fetchWithTimeout in lib/api.ts ensures we still don't hang
+  // indefinitely if the backend is unreachable.
+  staticPageGenerationTimeout: 120,
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Important: return the modified config
     return config;

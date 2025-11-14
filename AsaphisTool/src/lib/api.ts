@@ -25,11 +25,27 @@ export function getApiBase() {
   return 'https://asaphistoolsbackend.onrender.com/api/v1';
 }
 
+/**
+ * Helper to ensure backend fetches don't hang indefinitely during static generation.
+ * If the backend is slow or unreachable, we abort after a short timeout so
+ * Next.js build can continue and fall back to safe defaults.
+ */
+async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 export async function fetchToolsServer(): Promise<Tool[]> {
   const base = getApiBase();
   if (base && base.startsWith('http')) {
     try {
-      const res = await fetch(`${base}/tools`, { cache: 'no-store' });
+      const res = await fetchWithTimeout(`${base}/tools`, { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         const serverTools = (json.tools as Tool[]) || [];
@@ -53,7 +69,7 @@ export async function fetchCategoriesServer(): Promise<{ id: string; name: strin
   const base = getApiBase();
   if (base && base.startsWith('http')) {
     try {
-      const res = await fetch(`${base}/categories`, { cache: 'no-store' });
+      const res = await fetchWithTimeout(`${base}/categories`, { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         const cats = (json.categories || []).map((c: any) => ({ id: c.slug || c.id, name: c.name }));
