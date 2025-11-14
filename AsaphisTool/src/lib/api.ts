@@ -30,7 +30,7 @@ export function getApiBase() {
  * If the backend is slow or unreachable, we abort after a short timeout so
  * Next.js build can continue and fall back to safe defaults.
  */
-async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs = 10000) {
+async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs = 20000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -49,19 +49,15 @@ export async function fetchToolsServer(): Promise<Tool[]> {
       if (res.ok) {
         const json = await res.json();
         const serverTools = (json.tools as Tool[]) || [];
-        return serverTools;
+        if (serverTools.length) return serverTools;
       }
     } catch {
       // fall through to fallback logic below
     }
   }
 
-  // In production, avoid showing tools that the backend doesn't know about.
-  if (process.env.NODE_ENV === 'production') {
-    return [];
-  }
-
-  // In development, fall back to the locally defined tool list for convenience.
+  // Fallback: always show the locally defined implemented tools when backend fails,
+  // even in production, so the UI never appears empty.
   return implementedTools;
 }
 
@@ -80,10 +76,7 @@ export async function fetchCategoriesServer(): Promise<{ id: string; name: strin
     }
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    return [];
-  }
-
+  // Fallback categories derived from implemented tools so pages still work without backend.
   const cats = Array.from(new Set(implementedTools.map(t => t.category)));
   return cats.map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }));
 }

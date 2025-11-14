@@ -40,6 +40,11 @@ import { rateLimiter } from './middleware/rateLimiter.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Trust the first proxy (Render/Heroku style) so express-rate-limit
+// and other middleware see the correct client IP when X-Forwarded-For
+// is set by the platform load balancer.
+app.set('trust proxy', 1);
+
 // Create uploads directory if it doesn't exist
 import fs from 'fs';
 const uploadsDir = join(__dirname, '../uploads');
